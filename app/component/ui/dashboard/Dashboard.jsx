@@ -5,6 +5,32 @@ import React,{useState} from 'react'
 const Dashboard = () => {
   const [selectedFile,setSelectedFile] = useState(null)
   const [previewUrl,setPreviewUrl] = useState(null)
+  const [chat,setChat]= useState(null)
+  const handleChat = async ()=>{
+    if (!chat){
+      return
+    }
+    console.log(chat)
+    try{
+
+      const res = await fetch('/api/chat',{
+        method: "POST",
+        headers : {
+          "Content-Type": "application/json",
+        },
+    body: JSON.stringify({ message: chat }),  
+  })
+  console.log(res.ok)
+  try{
+    const data = await res.json()
+    console.log(data.response)
+  }catch(e){
+    console.log(`Something went wrong ${e}`)
+  }
+    }catch(e){
+      console.log(`Error ${e} occured`)
+    }
+  }
   
   const handleFileUpload= async()=>{
     if(!selectedFile) return;
@@ -12,7 +38,7 @@ const Dashboard = () => {
 
       const formData = new FormData()
       formData.append('file',selectedFile)
-      const res = await fetch('api/upload',{
+      const res = await fetch('api/files',{
         method:"POST",
         body : formData
       })
@@ -56,8 +82,9 @@ const Dashboard = () => {
                 </div>
             )}
             <button onClick={testChunk} className='w-auto h-auto p-3 rounded-2xl bg-stone-900 hover:bg-stone-800 mx-2 text-white'>chunk test</button>
- 
-    </div>
+            <textarea name="chat" id="chat" onChange={(e)=>setChat(e.target.value)} className='bg-stone-300 text-3xl'></textarea>
+            <button onClick={handleChat} className='w-auto h-auto p-3 rounded-2xl bg-stone-900 hover:bg-stone-800 mx-2 text-white' >submit chat </button>
+    </div>  
   )
 }
 

@@ -1,18 +1,24 @@
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import fs from "fs";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf"
 import path from "path";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters"
-import pdf from 'pdf-parse'
+import { randomUUID } from "crypto";
 
+export async function parsePdf(file) {
+  // 1. Convert File → Buffer
+    console.log("hit parsepdf ")
+    const bytes = await file.arrayBuffer();
+    console.log(bytes)
+    const buffer = Buffer.from(bytes);
+    console.log(buffer)
 
-export async function parsePdf(file){
-    // Loading the file  const 
-    const buffer = Buffer.from(await file.arrayBuffer(file))
+  // 2. Save temporarily (required for PDFLoader fs version)
+  const filePath = path.join(process.cwd(), `${randomUUID()}.pdf`);
+  console.log(filePath)
+  fs.writeFileSync(filePath, buffer);
 
-    const data = await pdf(buffer);
-    console.log("========================")
-    console.log(data);
-    console.log("========================")
+  // 3. Load PDF into Documents
+  const loader = new PDFLoader(filePath);
+  const docs = await loader.load();
 
-    return data.text;
+  return docs[0];
 }

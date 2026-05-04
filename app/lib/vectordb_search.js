@@ -1,5 +1,9 @@
 import { embeddings } from "./geminiEmbedding"
-export async function searchVectorDb(query){
-    const vectorQuery = await embeddings.embedQuery(query)
-    
+export default async function searchVectorDb(embeddedChunks){
+    const retriever = embeddedChunks.asRetriever({
+    searchType: "mmr",
+    k: 5,
+})
+    const context =await retriever.invoke("what is the topic of the pdf")
+    return context
 }
