@@ -20,5 +20,5 @@ export async function parsePdf(file) {
   const loader = new PDFLoader(filePath);
   const docs = await loader.load();
 
-  return docs[0];
+  return docs;
 }
