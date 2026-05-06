@@ -3,9 +3,16 @@ import { randomUUID } from "crypto";
 import { chunkDoc } from "@/app/lib/chunking";
 import { embedChunk } from "@/app/lib/embeddings";
 import { parsePdf } from "@/app/lib/pdf-parser";
+import { createClient } from "@/app/utils/supabase/server";
+import { NextResponse } from "next/server";
 
 export async function POST(req){
+    const supabase = await createClient()
+    const {data:{user}} =await supabase.auth.getUser()
     console.log("api hit")
+    if (!user){
+      return NextResponse.json({status:401,message:"unauthorized user"})
+    }
     const data = await req.formData()
     const file = data.get("file")
     console.log("file recieved", file)
@@ -19,7 +26,7 @@ export async function POST(req){
     const chunkedDocs = await chunkDoc(docs)
     console.log(chunkedDocs)
     const fileId = randomUUID()
-    const embeddedChunks = await embedChunk(chunkedDocs,fileId)
+    const embeddedChunks = await embedChunk(chunkedDocs,fileId,user.id)
     // Sending response to the frontend
     return Response.json({totalChunks : embeddedChunks.length, preview : embeddedChunks})
 

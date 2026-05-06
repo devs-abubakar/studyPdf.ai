@@ -45,7 +45,7 @@ const Navbar = () => {
             <a href="#features" className="text-sm font-bold text-[#D552A3] hover:text-[#831C91] transition-colors uppercase tracking-wider">Features</a>
             <a href="#how-it-works" className="text-sm font-bold text-[#D552A3] hover:text-[#831C91] transition-colors uppercase tracking-wider">How it works</a>
             <button className="px-8 py-2.5 border-2 border-[#D552A3] rounded-full text-[#D552A3] font-bold text-sm hover:bg-[#D552A3] hover:text-white transition-all">
-              <Link href="/signUp">
+              <Link href="/signIn">
                 Login
                 </Link>
             </button>

@@ -10,15 +10,20 @@ export async function parsePdf(file) {
     console.log(bytes)
     const buffer = Buffer.from(bytes);
     console.log(buffer)
+  const uploadDir = path.join(process.cwd(), "tmp");
 
-  // 2. Save temporarily (required for PDFLoader fs version)
-  const filePath = path.join(process.cwd(), `${randomUUID()}.pdf`);
-  console.log(filePath)
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+  }
+
+  const filePath = path.join(uploadDir, `${randomUUID()}.pdf`);
   fs.writeFileSync(filePath, buffer);
-
+  
   // 3. Load PDF into Documents
   const loader = new PDFLoader(filePath);
   const docs = await loader.load();
+  
+  fs.unlinkSync(filePath)
 
   return docs;
 }

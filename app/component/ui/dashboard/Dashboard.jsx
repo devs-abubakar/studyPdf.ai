@@ -1,11 +1,34 @@
 "use client"
-import { consumeCallback } from '@langchain/core/callbacks/promises'
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
+import { supabase } from '@/app/utils/supabase/client'
+import { createClient } from '@/app/utils/supabase/client'
 
 const Dashboard = () => {
   const [selectedFile,setSelectedFile] = useState(null)
   const [previewUrl,setPreviewUrl] = useState(null)
+  const [user,setUser] = useState(null)
+  const [loading,setLoading] = useState(true)
   const [chat,setChat]= useState(null)
+  useEffect(() => {
+    async function currentUser(){
+
+    const {data, error } =await supabase.auth.getUser()
+    console.log(data)
+    if (error){
+      console.log(error)
+      return error
+    }
+    setUser(data.user)
+    console.log(user.email)
+
+    return data
+  }
+  currentUser()
+    
+  }, [])
+  
+
+
   const handleChat = async ()=>{
     if (!chat){
       return
@@ -56,7 +79,6 @@ const Dashboard = () => {
             return
         }
         setPreviewUrl(URL.createObjectURL(file))
-        console.log(file)
         setSelectedFile(file)
     }
     async function testChunk(){
@@ -66,10 +88,12 @@ const Dashboard = () => {
       console.log(data.preview)
     }
 
+
     return (
 
 
     <div className='w-screen h-screen flex justify-center items-center'>
+            <strong>{user?.email}</strong>
             <label >Select a file:</label>
             <input type="file" className='w-auto h-auto p-3 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white' onChange={handleChangeFile} id="myFile" accept="*"  name="filename" />
             <input type="submit" onClick={handleFileUpload} value="Upload" className='w-auto h-auto p-3 mx-2 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white' />

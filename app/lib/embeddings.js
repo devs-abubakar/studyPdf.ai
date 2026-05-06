@@ -1,15 +1,22 @@
+import { embeddings } from "./geminiEmbedding";
+import { createClient } from '@/app/utils/supabase/server'
 
-import { vectorStore } from "./vectorStore";
+export async function embedChunk(chunks, fileId, userId) {
+    const supabase = await createClient()
+  const texts = chunks.map(c => c.pageContent);
+  const vectors = await embeddings.embedDocuments(texts);
 
-export async function embedChunk(chunks,fileId){
-    const formattedDocs = chunks.map((chunk,id)=>({
-        pageContent : chunk.pageContent,
-        metadata : {
-            fileId : fileId,
-            chunkId: id,
-        }
-    }));
-    console.log(formattedDocs)
-    await vectorStore.addDocuments(formattedDocs)
-    return { fileId, totalChunks: formattedDocs.length };
+  const rows = chunks.map((chunk, i) => ({
+    content: chunk.pageContent,
+    metadata: {
+      fileId,
+      chunkId: i,
+    },
+    embedding: vectors[i],
+    user_id: userId,
+  }));
+
+  await supabase.from("documents").insert(rows);
+
+  return { fileId, totalChunks: rows.length };
 }
