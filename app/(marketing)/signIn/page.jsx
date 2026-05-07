@@ -1,10 +1,24 @@
 "use client"
 import { logInUser } from '@/actions/auth/logIn-action'
-import React, {useState} from 'react'
+import React, {useEffect} from 'react'
 import Link from 'next/link'
+import { supabase } from '@/app/utils/supabase/client'
+import { NextResponse } from 'next/server'
+import { useRouter } from 'next/navigation'
 
-const SignInPage = () => {
+const SignInPage =() => {
+  const router = useRouter()
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
 
+      if (user) {
+        router.replace("/dashboard");
+      }
+    };
+
+    checkUser();
+  }, [router]);
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData =new FormData(e.currentTarget)

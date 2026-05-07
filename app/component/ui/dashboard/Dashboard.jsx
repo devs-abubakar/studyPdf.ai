@@ -19,7 +19,7 @@ const Dashboard = () => {
       return error
     }
     setUser(data.user)
-    console.log(user.email)
+    console.log(user)
 
     return data
   }
@@ -87,11 +87,7 @@ const Dashboard = () => {
       console.log(data)
       console.log(data.preview)
     }
-
-
     return (
-
-
     <div className='w-screen h-screen flex justify-center items-center'>
             <strong>{user?.email}</strong>
             <label >Select a file:</label>
