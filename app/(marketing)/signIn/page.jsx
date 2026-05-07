@@ -1,8 +1,10 @@
 "use client"
 import { logInUser } from '@/actions/auth/logIn-action'
-import React from 'react'
+import React, {useState} from 'react'
+import Link from 'next/link'
 
-const  page = () => {
+const SignInPage = () => {
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         const formData =new FormData(e.currentTarget)
@@ -18,9 +20,11 @@ const  page = () => {
         <label> password </label>
         <input name='password' type='password'/>
         <button type="submit"> log in </button>
+        <Link href="/signUp">Go to sign-Up</Link>
+
         </form>
     </div>
   )
 }
 
-export default page
+export default SignInPage
