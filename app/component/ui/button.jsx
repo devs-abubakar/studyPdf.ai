@@ -1,11 +1,12 @@
+import {cn} from '@/app/lib/utils/utils'
 
-export function Button({ variant = "primary", className, ...props }) {
+export default function Button({ children,  type = "button", variant = "primary", className, ...props }) {
   const base =
     "px-6 py-3 rounded-xl font-semibold transition-all active:scale-95"
 
   const variants = {
-    primary:
-      "bg-primary text-white hover:opacity-90",
+  primary:
+  "bg-pink-500 text-white hover:bg-pink-600",
     secondary:
       "bg-muted text-foreground hover:bg-border",
     outline:
@@ -16,8 +17,11 @@ export function Button({ variant = "primary", className, ...props }) {
 
   return (
     <button
-      className={(base, variants[variant], className)}
+      className={cn(base, variants[variant], className)}
       {...props}
-    />
+    > {children}
+    </button>
+
+
   )
 }

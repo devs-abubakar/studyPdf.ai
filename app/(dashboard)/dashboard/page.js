@@ -1,9 +1,6 @@
-import Dashboard from "@/app/component/dashboard/Dashboard";
+import { ChatLayout } from "@/app/component/dashboard/chat/chat-layout";
 
-export default function Home(){
-    return(
-        <div>
-            <Dashboard/>
-        </div>
-    )
+
+export default function DashboardPage() {
+  return <ChatLayout/>
 }

@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils/cn";
+import { cn } from "@/lib/utils/utils";
 
 export default function Card({ children, className }) {
   return (
     <div
-      className="rounded-2xl border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm p-6"
+      className={cn("rounded-2xl border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm p-6",className)}
     >
       {children}
     </div>

@@ -1,20 +1,15 @@
-import "@/app/globals.css";
+import "@/app/globals.css"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/app/component/dashboard/sidebar/app-sidebar"
+import { DashboardShell } from "@/app/component/dashboard/dashboard-shell"
 
-import ThemeProvider from "@/app/component/providers/ThemeProvider";
-import QueryProvider from "@/app/component/providers/QueryProvider";
-
-export default function RootLayout({
-  children,
-}) {
+export default function DashboardLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-black text-white">
-        <ThemeProvider>
-          <QueryProvider>
-            {children}
-          </QueryProvider>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+    <SidebarProvider defaultOpen>
+      <div className="flex h-screen w-full overflow-hidden">
+        <AppSidebar />
+        <DashboardShell>{children}</DashboardShell>
+      </div>
+    </SidebarProvider>
+  )
 }
