@@ -1,6 +1,6 @@
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 import { createClient } from "@supabase/supabase-js";
-import { embeddings } from "./geminiEmbedding";
+import { embeddings } from "../ai/geminiEmbedding";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,

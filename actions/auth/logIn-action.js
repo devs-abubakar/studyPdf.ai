@@ -1,5 +1,5 @@
 "use server"
-import {createClient} from '@/app/utils/supabase/server'
+import {createClient} from '@/app/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export async function logInUser(formData){

@@ -1,5 +1,5 @@
-import { embeddings } from "./geminiEmbedding";
-import { createClient } from '@/app/utils/supabase/server'
+import { embeddings } from "../geminiEmbedding";
+import { createClient } from '@/app/lib/supabase/server'
 
 export async function embedChunk(chunks, fileId, userId) {
     const supabase = await createClient()

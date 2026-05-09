@@ -2,7 +2,7 @@
 import { logInUser } from '@/actions/auth/logIn-action'
 import React, {useEffect} from 'react'
 import Link from 'next/link'
-import { supabase } from '@/app/utils/supabase/client'
+import { supabase } from '@/app/lib/supabase/client'
 import { NextResponse } from 'next/server'
 import { useRouter } from 'next/navigation'
 

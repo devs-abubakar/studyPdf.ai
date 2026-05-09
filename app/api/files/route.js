@@ -1,9 +1,9 @@
 
 import { randomUUID } from "crypto";
-import { chunkDoc } from "@/app/lib/chunking";
-import { embedChunk } from "@/app/lib/embeddings";
-import { parsePdf } from "@/app/lib/pdf-parser";
-import { createClient } from "@/app/utils/supabase/server";
+import { chunkDoc } from "@/app/lib/rag/chunking";
+import { embedChunk } from "@/app/lib/ai/embeddings";
+import { parsePdf } from "@/app/lib/pdf/pdf-parser";
+import { createClient } from "@/app/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function POST(req){

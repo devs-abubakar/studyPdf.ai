@@ -1,34 +1,20 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import ThemeProvider from "@/app/component/providers/ThemeProvider";
+import QueryProvider from "@/app/component/providers/QueryProvider";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata = {
-  title: "StudyPdf.ai",
-  description: "Study and summarize faster",
-};
-
-export default function DashboardLayout({children}){
-    return(
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-        <body className="landing-theme">
-        <div className="h-[100vh] w-[100vw]">
-        <section className="landing-page-content">
+export default function RootLayout({
+  children,
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-black text-white">
+        <ThemeProvider>
+          <QueryProvider>
             {children}
-        </section>
-        </div>
-        </body>
+          </QueryProvider>
+        </ThemeProvider>
+      </body>
     </html>
-    )
+  );
 }

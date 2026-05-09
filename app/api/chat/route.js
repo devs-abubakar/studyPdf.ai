@@ -1,8 +1,8 @@
 import chatGroq from "@/app/lib/chat_openai"
 import {userChatHistory, assistantChatHistory} from "@/app/lib/messages"
 import { NextResponse } from "next/server"
-import  searchVectorDb  from "@/app/lib/vectordb_search"
-import { vectorStore } from "@/app/lib/vectorStore"
+import  searchVectorDb  from "@/app/lib/rag/vectordb_search"
+import { vectorStore } from "@/app/lib/rag/vectorStore"
 import { maximalMarginalRelevance } from "@langchain/core/utils/math";
 
 export async function POST(req){

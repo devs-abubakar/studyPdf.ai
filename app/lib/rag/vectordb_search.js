@@ -1,4 +1,4 @@
-import { embeddings } from "./geminiEmbedding"
+import { embeddings } from "../ai/geminiEmbedding"
 export default async function searchVectorDb(embeddedChunks){
     const retriever = embeddedChunks.asRetriever({
     searchType: "mmr",
