@@ -15,8 +15,8 @@ const chats = [
   },
 ]
 
-export function RecentChats() {
-  return (
+export function RecentChats({collapsed}) {
+  if (!collapsed){return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-muted-foreground">
         Recent Chats
@@ -32,4 +32,4 @@ export function RecentChats() {
       </div>
     </div>
   )
-}
+}}

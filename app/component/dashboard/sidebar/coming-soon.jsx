@@ -1,7 +1,8 @@
+import { SparkleIcon } from "lucide-react"
 import { Sparkles } from "lucide-react"
 
-export function ComingSoon() {
-  return (
+export function ComingSoon({collapsed}) {
+  if (!collapsed){return (
     <div className="rounded-xl border p-3">
       <div className="flex items-center gap-2">
         <Sparkles className="size-4" />
@@ -19,4 +20,8 @@ export function ComingSoon() {
       </ul>
     </div>
   )
+}
+return(
+  <SparkleIcon/>
+)
 }
