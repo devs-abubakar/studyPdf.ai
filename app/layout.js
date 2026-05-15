@@ -16,12 +16,13 @@ export const metadata = {
   description: "Help your self grow faster with StudyPdf.ai",
 };
 
-export default function LandingPageLayout({children}){
-    return(
-<div className="h-[100vh] w-[100vw]">
-      <section className="landing-page-content">
-        {children}
-      </section>
-    </div>
-    )
+export default function RootLayout({ children }) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body>{children}</body>
+    </html>
+  );
 }

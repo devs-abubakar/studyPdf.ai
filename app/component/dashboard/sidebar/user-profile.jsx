@@ -11,7 +11,6 @@ export function UserProfile({collapsed}) {
 
     return (
     <div className="flex items-center w-auto gap-3 rounded-xl border p-3">
-
       {avatar}
       {!collapsed && <div className="flex flex-col">
         <span className="text-sm font-medium">
