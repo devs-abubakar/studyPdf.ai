@@ -22,6 +22,8 @@ export function ComingSoon({collapsed}) {
   )
 }
 return(
-  <SparkleIcon/>
+ <div className="flex justify-center items-center">
+    <SparkleIcon />
+  </div>
 )
 }

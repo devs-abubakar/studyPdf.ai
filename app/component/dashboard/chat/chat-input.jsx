@@ -11,19 +11,62 @@ export function ChatInput() {
   const activeChat = useChatStore((state)=>state.activeChat)
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
-  function handleSubmit(){
-    if(!query || !query.trim()){
-      return
+  const messages = useChatStore((state)=>state.messages)
+  
+async function getResponse(messages) {
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ messages })
+    })
+    if (!response.ok) {
+  return {
+    success: false,
+    message: "API failed"
+  }
+}
+
+    const data = await response.json()
+
+    return data
+
+  } catch (err) {
+    console.error(err)
+
+    return {
+      success: false,
+      message: "Fetch failed"
     }
-    if(!activeChat){
-      createNewChat()
+  }
+}
+
+
+  async function handleSubmit() {
+  if (!query.trim()) return
+
+  const updatedMessages = [
+    ...messages,
+    {
+      role: "user",
+      content: query
     }
-    addMessage("user",query)
-    setQuery("")
-    addMessage("assistant","hey there")
-    
+  ]
+
+  if (!activeChat) {
+    createNewChat("New Chat")
   }
 
+  addMessage("user", query)
+
+  setQuery("")
+
+  const result = await getResponse(updatedMessages)
+
+  addMessage("assistant", result.response)
+}
   function handleChange(e){
     e.preventDefault()
     const data = e.target.value
@@ -32,9 +75,8 @@ export function ChatInput() {
 
 
   return (
-    <div className="border-t bg-background p-4">
+    <div className="mx-auto max-w-3xl">
       
-      <div className="mx-auto max-w-4xl w-4xl">
         
         <div className="flex items-center gap-2 rounded-2xl border bg-background p-2 shadow-sm">
           
@@ -64,7 +106,5 @@ export function ChatInput() {
         </div>
 
       </div>
-
-    </div>
   )
 }

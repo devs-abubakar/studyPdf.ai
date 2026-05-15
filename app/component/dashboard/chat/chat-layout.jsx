@@ -1,11 +1,11 @@
 "use client"
-import { ChatArea } from "./chat-area"
+
 import { ChatBox } from "./chat-box"
 
 export function ChatLayout() {
   return (
-    <div className="flex max-h-screen flex-col">
-      <ChatArea />
+    <div className="flex h-full flex-col">
+      
       <ChatBox/>
     </div>
   )
