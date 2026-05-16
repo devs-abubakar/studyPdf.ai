@@ -2,6 +2,10 @@
 
 AI-powered study assistant that lets you upload PDFs and ask questions with accurate, context-aware answers.
 
+## 🚀 Demo
+
+![StudyPDF.ai Demo](https://raw.githubusercontent.com/devs-abubakar/studyPdf.ai/main/public/assets/demo.gif)
+
 🚀 Live Demo
 Will be uploaded soon
 
