@@ -72,4 +72,4 @@ Faster embedding pipeline
 🧑‍💻 Author
 
 Built by Abubakar
-Passionate about AI, systems, and frontend engineering.
+Passionate about AI, systems, and full stack engineering.
