@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+📄 StudyPDF.ai
 
-## Getting Started
+AI-powered study assistant that lets you upload PDFs and ask questions with accurate, context-aware answers.
 
-First, run the development server:
+🚀 Live Demo
+Will be uploaded soon
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+✨ What it does
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+StudyPDF.ai helps you:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Upload any PDF
+Ask questions in natural language
+Get answers grounded in your document
+View relevant source chunks
+Understand concepts faster without reading everything manually
+🧠 Why this project is different
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Most AI PDF tools:
 
-## Learn More
+Repeat irrelevant chunks
+Lose context in long documents
+Don’t explain reasoning clearly
 
-To learn more about Next.js, take a look at the following resources:
+This project improves that by using:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Vector similarity search for retrieval
+MMR (Max Marginal Relevance) to reduce repetition
+Context-aware chunking strategy
+Streaming responses for better UX
+⚙️ Tech Stack
+Next.js
+Tailwind CSS
+OpenAI / Embeddings API
+Vector database (Pinecone / FAISS / Weaviate — choose yours)
+RAG architecture
+🏗️ Architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+User PDF → Text Extraction → Chunking → Embeddings → Vector DB
+→ Query Embedding → Similarity Search / MMR → Context → LLM → Answer
 
-## Deploy on Vercel
+(Add diagram here using Excalidraw)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+📸 Features
+📄 PDF Upload
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Upload and process documents instantly.
+
+🔍 Smart Retrieval
+
+Finds the most relevant sections using vector search.
+
+🧠 AI Answers
+
+Answers are strictly based on document context.
+
+⚡ Streaming UI
+
+Real-time response generation like ChatGPT.
+
+🧪 Challenges I faced
+Chunking large PDFs without losing context
+Improving retrieval quality (solved using MMR)
+Reducing hallucinations in answers
+Handling long context efficiently
+📌 Future improvements
+Multi-document chat
+Highlight answers inside PDF
+Better ranking system for retrieval
+Save chat history per document
+Faster embedding pipeline
+🧑‍💻 Author
+
+Built by Abubakar
+Passionate about AI, systems, and frontend engineering.
