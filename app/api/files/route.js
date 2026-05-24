@@ -13,6 +13,7 @@ export async function POST(req){
     if (!user){
       return NextResponse.json({status:401,message:"unauthorized user"})
     }
+    const userId= user.id
     const data = await req.formData()
     const file = data.get("file")
     console.log("file recieved", file)
@@ -20,14 +21,22 @@ export async function POST(req){
       return
     }
     console.log("before pdfparse")
-    const docs = await parsePdf(file)
-    console.log("after pdfparse")
-    console.log(docs)
-    const chunkedDocs = await chunkDoc(docs)
-    console.log(chunkedDocs)
     const fileId = randomUUID()
-    const embeddedChunks = await embedChunk(chunkedDocs,fileId,user.id)
+    const context ={
+      userId,
+      fileId
+    }
+    try{
+      const docs = await parsePdf(file)
+  
+    const chunkedDocs = await chunkDoc(docs)
+  
+    const embeddedChunks = await embedChunk(chunkedDocs,context.fileId,context.userId)
+    
     // Sending response to the frontend
-    return Response.json({totalChunks : embeddedChunks.length, preview : embeddedChunks})
+    return Response.json({status:true, message:"success"})
+  }catch(e){
+    return Response.json({status: false, message:"something went wrong"})
+  }
 
 }

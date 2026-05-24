@@ -1,9 +1,10 @@
 "use client"
-import { useState } from 'react'
+import { useRef, useState , useEffect} from 'react'
 import { ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useChatStore } from '@/store/chat-store'
+import {UploadDropdown} from './input/option-drawer'
 
 
 export function ChatInput() {
@@ -12,6 +13,18 @@ export function ChatInput() {
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
   const messages = useChatStore((state)=>state.messages)
+  const [selectedFile,setSelectedFile] = useState(null)
+  const fileRef = useRef(null)
+  
+function handleFileChange(e){
+  const file = e.target.files[0]
+  console.log(file)
+  if (!file){
+    return
+  }
+  setSelectedFile(file)
+  console.log(selectedFile)
+}
   
 async function getResponse(messages) {
   try {
@@ -43,6 +56,34 @@ async function getResponse(messages) {
   }
 }
 
+async function uploadFile(formData){
+    try{
+      const response = await fetch("/api/files",{
+        method : "POST",
+        body:formData
+      }
+      )
+    return response
+    }catch(e){
+      console.log("An error occured : ",e)
+    }
+}
+
+useEffect(() => {
+  if (!selectedFile) return
+
+  const formData = new FormData()
+  formData.append("file", selectedFile)
+
+  uploadFile(formData)
+}, [selectedFile])
+
+function handleSelectItem(type){
+  if (type === "pdf"){
+    fileRef.current.click()
+  }
+  
+}
 
   async function handleSubmit() {
   if (!query.trim()) return
@@ -79,7 +120,13 @@ async function getResponse(messages) {
       
         
         <div className="flex items-center gap-2 rounded-2xl border bg-background p-2 shadow-sm">
-          
+        <UploadDropdown onSelect={handleSelectItem}  />
+        <input
+          ref={fileRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileChange}
+        />
           <Textarea
             placeholder="Ask anything..."
             onChange={handleChange}

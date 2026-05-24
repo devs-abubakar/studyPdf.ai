@@ -3,10 +3,14 @@ import React from 'react'
 import { ChatInput } from './chat-input'
 import { useChatStore } from '@/store/chat-store'
 import WelcomeScreen from './chat-welcome'
+import markdownit from 'markdown-it'
+
 
 export function ChatBox() {
   const messages = useChatStore((s)=>s.messages)
   const activeChat = useChatStore((s)=>s.activeChat)
+  const md = new markdownit({html:true,breaks:true,linkify:true})
+
   return (
     <div className="relative flex flex-col min-h-0 flex-1 w-full">
       
@@ -32,9 +36,12 @@ export function ChatBox() {
           }
         `}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-          {message.content}
-        </p>
+    <div
+      className="text-sm leading-relaxed whitespace-pre-wrap prose prose-invert max-w-none"
+      dangerouslySetInnerHTML={{
+        __html: md.render(message.content),
+      }}
+    />
       </div>
     </div>
   )
