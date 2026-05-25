@@ -5,6 +5,7 @@ import { embedChunk } from "@/app/lib/ai/embeddings";
 import { parsePdf } from "@/app/lib/pdf/pdf-parser";
 import { createClient } from "@/app/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { storeFile } from "@/app/lib/pdf/file-storing";
 
 export async function POST(req){
     const supabase = await createClient()
@@ -26,11 +27,17 @@ export async function POST(req){
       userId,
       fileId
     }
+    const storedFile = await storeFile(file,userId)
+    console.log(storedFile)
+    if (!storedFile.success){
+      throw new Error("Failed to store")
+    }
     try{
-      const docs = await parsePdf(file)
+    const docs = await parsePdf(file)
   
     const chunkedDocs = await chunkDoc(docs)
-  
+    
+
     const embeddedChunks = await embedChunk(chunkedDocs,context.fileId,context.userId)
     
     // Sending response to the frontend

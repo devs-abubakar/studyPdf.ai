@@ -144,3 +144,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
+.truncate-text {
+  white-space: wrap;      /* Keeps text on a single line */
+  overflow: hidden;         /* Hides the overflowing text */
+  text-overflow: ellipsis;  /* Adds the '...' at the end */
+  width: 100%;             /* Requires a defined width or max-width */
+}

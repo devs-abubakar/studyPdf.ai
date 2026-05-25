@@ -5,20 +5,28 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useChatStore } from '@/store/chat-store'
 import {UploadDropdown} from './input/option-drawer'
+import FilePill from './input/file-pill'
 
 
 export function ChatInput() {
   const [query,setQuery] = useState("")
+  const [uploadingFile,setUploadingFile] = useState(false)
+  const [isReady,setIsReady] = useState(false)
   const activeChat = useChatStore((state)=>state.activeChat)
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
   const messages = useChatStore((state)=>state.messages)
   const [selectedFile,setSelectedFile] = useState(null)
+  const [filename, setFilename] = useState("")
   const fileRef = useRef(null)
+
   
 function handleFileChange(e){
+
   const file = e.target.files[0]
-  console.log(file)
+  console.log("File details : ",file)
+  setFilename(file?.name)
+  console.log("File Name",filename)
   if (!file){
     return
   }
@@ -26,6 +34,12 @@ function handleFileChange(e){
   console.log(selectedFile)
 }
   
+function handleRemoveFile(){
+  setIsReady(false)
+  setUploadingFile(false)
+  setSelectedFile(null)
+  setFilename("")
+}
 async function getResponse(messages) {
   try {
     const response = await fetch("/api/chat", {
@@ -57,15 +71,20 @@ async function getResponse(messages) {
 }
 
 async function uploadFile(formData){
+    setUploadingFile(true)
     try{
       const response = await fetch("/api/files",{
         method : "POST",
         body:formData
       }
       )
+      setUploadingFile(false)
+      setIsReady(true)
     return response
+
     }catch(e){
       console.log("An error occured : ",e)
+      setUploadingFile(false)
     }
 }
 
@@ -117,17 +136,11 @@ function handleSelectItem(type){
 
   return (
     <div className="mx-auto max-w-3xl">
-      
-        
-        <div className="flex items-center gap-2 rounded-2xl border bg-background p-2 shadow-sm">
-        <UploadDropdown onSelect={handleSelectItem}  />
-        <input
-          ref={fileRef}
-          type="file"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-          <Textarea
+        <div className="flex flex-col items-start gap-2 rounded-2xl border bg-background p-2 shadow-sm">
+         <div>
+          {selectedFile && <FilePill fileName={filename} onClick={handleRemoveFile} isReday={isReady} uploadingFile={uploadingFile}/>}
+        </div>
+        <Textarea
             placeholder="Ask anything..."
             onChange={handleChange}
             value={query}
@@ -139,17 +152,26 @@ function handleSelectItem(type){
               bg-transparent
               focus-visible:ring-0
               focus-visible:ring-offset-0
-            "
+              "
           />
 
+        <div className='flex w-full justify-between'>
+        <UploadDropdown onSelect={handleSelectItem}  />
+        <input
+          ref={fileRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileChange}
+        />
           <Button
+            disabled={uploadingFile}
             size="icon"
             className="size-10 rounded-full shrink-0"
             onClick = {handleSubmit}
-          >
+            >
             <ArrowUp className="size-5" />
           </Button>
-
+          </div> 
         </div>
 
       </div>
