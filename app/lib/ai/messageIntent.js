@@ -1,4 +1,4 @@
-const retrievalKeywords=[  "pdf",
+const retrievalKeywords=["pdf",
 "document",
 "file",
 "chapter",
