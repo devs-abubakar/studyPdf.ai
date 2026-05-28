@@ -1,12 +1,26 @@
 import chatGroq from "@/app/lib/ai/chat_openai"
 import { UploadChatSessionDetails } from "@/app/lib/services/chat-session-service"
 import { NextResponse } from "next/server"
+import {createClient} from "@/app/lib/supabase/server"
+import { UplaodChatMessageDetails } from "@/app/lib/services/chat-message-service"
 
 export async function POST(req){
     
-    const { messages } =await req.json()
+    const supabase = await createClient()
+    const {data:{user}} =await supabase.auth.getUser()
+    console.log("api hit")
+    if (!user){
+      return NextResponse.json({status:401,message:"unauthorized user"})
+    }
+    const { messages ,sessionId } =await req.json()
     console.log("query in the route data --->",messages)
-
+    const userId= user.id
+    const latestMessage = messages[messages.length - 1] 
+    console.log("Latest message =====>",latestMessage)
+    let currentSessionId = sessionId
+    console.log("currentSession =====>",currentSessionId)
+    console.log("user id is ===>",userId)
+    
 //     const message = userChatHistory(query)
 //     const fetchK = 20
 //     const retriever = vectorStore.asRetriever({
@@ -39,9 +53,17 @@ export async function POST(req){
 
 //     Answer in under 200 words.
 //     `;
+    const title= "New chat"
+    if(!currentSessionId){
+        const chatSession = await UploadChatSessionDetails({userId:userId,title:title,supabase:supabase})
+        currentSessionId = chatSession.message.id
+    }
+    console.log("Currentsession after update ====>",currentSessionId)
+    const userMessage = await UplaodChatMessageDetails({sessionId:currentSessionId,message:latestMessage.content,role:"user",supabase:supabase})
+    console.log("user message===> ",userMessage)
     const chatResponse = await chatGroq(messages)
-    const {userId, title} = {userId:"dummy user for now", title:"dummy title for now"}
-    const chatSession = await UploadChatSessionDetails(userId,title)
+    const assistantMessage = await UplaodChatMessageDetails({sessionId:currentSessionId,message:chatResponse,role:"assistant",supabase:supabase})
+    console.log("assistant message===> ",assistantMessage)
     console.log("chatResponse --->",chatResponse)
-    return NextResponse.json({status : true,response : chatResponse})
+    return NextResponse.json({status : true,response : chatResponse, sessionId : currentSessionId ,title : title})
 }

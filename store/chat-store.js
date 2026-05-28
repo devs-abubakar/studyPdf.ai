@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export const useChatStore = create((set,get)=>({
-
+  chats : [],
   messages : [],
   activeChat : null,
 
@@ -9,20 +9,32 @@ export const useChatStore = create((set,get)=>({
 
   recentChats : [
   ],
-  createNewChat : ((title)=>{
+  createNewChat : ((sessionId,title,messages)=>{
     const newChat = {
-      id :Date.now(),
+      id :sessionId,
       title:title,
     }
     set((state) => ({
-      messages: [],
-      activeChat: newChat.id,
-      }))
+    recentChats: [newChat, ...state.recentChats],
+    messages :[...messages],
+    activeChat: newChat.id
+}))
   }),
 
-  addMessage : (role,content) => {
+   addMessage: (role, content) => {
+    
     set((state) => ({
-     messages:[...state.messages,{role : role,content : content}]
+      messages: [
+        ...state.messages,
+        { role: role, content: content }
+      ]
     }))
+  },
+
+  clearMessage: () => {
+    set({
+      messages: []
+    })
   }
+
 }))

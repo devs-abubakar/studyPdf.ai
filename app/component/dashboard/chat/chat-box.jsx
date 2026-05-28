@@ -15,7 +15,7 @@ export function ChatBox() {
     <div className="relative flex flex-col min-h-0 flex-1 w-full">
       
       {/* Messages Area */}
-      {!activeChat?
+      {messages.length == 0 && !activeChat?
         <WelcomeScreen/>
       :<div className="absolute inset-0 flex-1 overflow-y-auto pb-36 px-4">
         <div className="mx-auto max-w-3xl py-4 space-y-4">
@@ -39,7 +39,7 @@ export function ChatBox() {
     <div
       className="text-sm leading-relaxed whitespace-pre-wrap prose prose-invert max-w-none"
       dangerouslySetInnerHTML={{
-        __html: md.render(message.content),
+        __html: md.render(message?.content),
       }}
     />
       </div>

@@ -13,6 +13,7 @@ export function ChatInput() {
   const [uploadingFile,setUploadingFile] = useState(false)
   const [isReady,setIsReady] = useState(false)
   const activeChat = useChatStore((state)=>state.activeChat)
+  const setActiveChat = useChatStore((state)=>state.setActiveChat)
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
   const messages = useChatStore((state)=>state.messages)
@@ -47,7 +48,7 @@ async function getResponse(messages) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ messages })
+      body: JSON.stringify({ messages : messages ,sessionId:activeChat })
     })
     if (!response.ok) {
   return {
@@ -57,7 +58,10 @@ async function getResponse(messages) {
 }
 
     const data = await response.json()
-
+    console.log(data)
+    if(!activeChat){
+      createNewChat(data.sessionId,data.title,messages)
+    }
     return data
 
   } catch (err) {
@@ -104,26 +108,27 @@ function handleSelectItem(type){
   
 }
 
-  async function handleSubmit() {
+async function handleSubmit() {
   if (!query.trim()) return
 
-  const updatedMessages = [
-    ...messages,
-    {
-      role: "user",
-      content: query
-    }
-  ]
+  const currentQuery = query
 
-  if (!activeChat) {
-    createNewChat("New Chat")
+  const userMessage = {
+    role: "user",
+    content: currentQuery
   }
-
-  addMessage("user", query)
-
+  console.log("user message variable ==>",userMessage)
+  addMessage("user", currentQuery)
+  console.log("messages after addMessage to zustand",messages)
   setQuery("")
 
-  const result = await getResponse(updatedMessages)
+  const currentMessages = [
+    ...messages,
+    userMessage
+  ]
+  console.log("Messages from zustand ==>",messages)
+  console.log("current messages",currentMessages)
+  const result = await getResponse(currentMessages)
 
   addMessage("assistant", result.response)
 }
