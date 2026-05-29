@@ -1,53 +1,17 @@
-"use client"
+import { useEffect, useState } from "react";
+import { supabase } from "@/app/lib/supabase/client";
 
-import { useState } from "react"
-
-export function useChat() {
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState([])
-  const [loading, setLoading] = useState(false)
-
-  const sendMessage = async () => {
-    if (!message.trim()) return
-
-    setLoading(true)
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message
-        })
-      })
-
-      const data = await res.json()
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "user",
-          content: message
-        },
-        {
-          role: "assistant",
-          content: data.response
-        }
-      ])
-
-      setMessage("")
-    } finally {
-      setLoading(false)
+export function useChat(){
+  const [chats,setChats] = useState([]);
+  useEffect(()=>{
+    async function load(){
+    const {data,error} =await supabase.from('chat_sessions').select('id,title,created_at').order('created_at',{ascending:false}).range(0,9)
+    if(error){
+      console.error(error)
     }
+    setChats(data || [])
   }
-
-  return {
-    message,
-    setMessage,
-    messages,
-    sendMessage,
-    loading
-  }
+  load()
+  },[])
+  return chats
 }

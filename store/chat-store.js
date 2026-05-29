@@ -1,27 +1,37 @@
 import { create } from "zustand";
 
-export const useChatStore = create((set,get)=>({
-  chats : [],
-  activeChat : null,
+export const useChatStore = create((set, get) => ({
+  chats: [],
+  activeChat: null,
+  setChats: (chats) => set({ chats }),
+  setActiveChat: (chatId) => set({ activeChat: chatId }),
+  
+  // NEW: Action to hydrate historical messages into a specific chat
+  setHistoricalMessages: (sessionId, messages) => set((state) => ({
+    chats: state.chats.map((chat) =>
+      chat.sessionId === sessionId
+        ? { ...chat, messages: messages }
+        : chat
+    )
+  })),
 
-  setActiveChat :(chatId)=>set({activeChat : chatId}),
-  createNewChat : ((sessionId,title)=>{
+  createNewChat: (sessionId, title) => {
     const newChat = {
       sessionId,
       title,
-      messages: []
-    }
+      messages: [] 
+    };
+    
     set((state) => ({
-    chats: [newChat, ...state.chats],
-    messages :[],
-    activeChat: newChat.sessionId
-}))
-  }),
+      chats: [newChat, ...state.chats],
+      activeChat: newChat.sessionId
+      // BUG FIX: Removed the floating 'messages: []' that was overriding root state
+    }));
+  },
 
-addMessage: (role, content) => {
-    const { activeChat } = get()
-
-    if (!activeChat) return
+  addMessage: (role, content) => {
+    const { activeChat } = get();
+    if (!activeChat) return;
 
     set((state) => ({
       chats: state.chats.map((chat) =>
@@ -35,6 +45,6 @@ addMessage: (role, content) => {
             }
           : chat
       )
-    }))
+    }));
   },
-}))
+}));

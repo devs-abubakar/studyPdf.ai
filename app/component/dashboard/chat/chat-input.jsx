@@ -17,8 +17,8 @@ export function ChatInput() {
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
   const chats = useChatStore((state)=>state.chats)
-const currentChat = chats.find(c => c.id === activeChat)
-const messages = currentChat?.messages || []
+  const currentChat = chats.find(c => c.id === activeChat)
+  const messages = currentChat?.messages || []
   const [selectedFile,setSelectedFile] = useState(null)
   const [filename, setFilename] = useState("")
   const fileRef = useRef(null)
