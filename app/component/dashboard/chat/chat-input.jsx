@@ -7,16 +7,18 @@ import { useChatStore } from '@/store/chat-store'
 import {UploadDropdown} from './input/option-drawer'
 import FilePill from './input/file-pill'
 
+ 
 
 export function ChatInput() {
   const [query,setQuery] = useState("")
   const [uploadingFile,setUploadingFile] = useState(false)
   const [isReady,setIsReady] = useState(false)
   const activeChat = useChatStore((state)=>state.activeChat)
-  const setActiveChat = useChatStore((state)=>state.setActiveChat)
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
-  const messages = useChatStore((state)=>state.messages)
+  const chats = useChatStore((state)=>state.chats)
+const currentChat = chats.find(c => c.id === activeChat)
+const messages = currentChat?.messages || []
   const [selectedFile,setSelectedFile] = useState(null)
   const [filename, setFilename] = useState("")
   const fileRef = useRef(null)
@@ -41,14 +43,14 @@ function handleRemoveFile(){
   setSelectedFile(null)
   setFilename("")
 }
-async function getResponse(messages) {
+async function getResponse(messages,sessionId) {
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ messages : messages ,sessionId:activeChat })
+      body: JSON.stringify({ messages : messages ,sessionId:sessionId })
     })
     if (!response.ok) {
   return {
@@ -59,9 +61,6 @@ async function getResponse(messages) {
 
     const data = await response.json()
     console.log(data)
-    if(!activeChat){
-      createNewChat(data.sessionId,data.title,messages)
-    }
     return data
 
   } catch (err) {
@@ -117,19 +116,24 @@ async function handleSubmit() {
     role: "user",
     content: currentQuery
   }
+  let currentSessionId = activeChat
+  if(!currentSessionId){
+    currentSessionId = crypto.randomUUID()
+    createNewChat(currentSessionId, currentQuery.slice(0, 5))
+    console.log("this is the session id created ===>",currentSessionId)
+  }
   console.log("user message variable ==>",userMessage)
   addMessage("user", currentQuery)
   console.log("messages after addMessage to zustand",messages)
   setQuery("")
 
   const currentMessages = [
-    ...messages,
+    ...(messages || []),
     userMessage
   ]
   console.log("Messages from zustand ==>",messages)
   console.log("current messages",currentMessages)
-  const result = await getResponse(currentMessages)
-
+  const result = await getResponse(currentMessages,currentSessionId)
   addMessage("assistant", result.response)
 }
   function handleChange(e){

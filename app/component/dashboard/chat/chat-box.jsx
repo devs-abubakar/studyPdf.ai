@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React,{useEffect} from 'react'
 import { ChatInput } from './chat-input'
 import { useChatStore } from '@/store/chat-store'
 import WelcomeScreen from './chat-welcome'
@@ -7,15 +7,24 @@ import markdownit from 'markdown-it'
 
 
 export function ChatBox() {
-  const messages = useChatStore((s)=>s.messages)
+  const chats = useChatStore((s)=>s.chats)
   const activeChat = useChatStore((s)=>s.activeChat)
+  const currentChat = useChatStore((s) =>
+  s.chats.find((c) => c.sessionId === s.activeChat)
+  )
+  const messages = currentChat?.messages ?? []
   const md = new markdownit({html:true,breaks:true,linkify:true})
+  useEffect(() => {
+  
+    console.log("current chat in chat box",currentChat);
 
+  }, [currentChat])
+  
   return (
     <div className="relative flex flex-col min-h-0 flex-1 w-full">
       
       {/* Messages Area */}
-      {messages.length == 0 && !activeChat?
+      {!activeChat?
         <WelcomeScreen/>
       :<div className="absolute inset-0 flex-1 overflow-y-auto pb-36 px-4">
         <div className="mx-auto max-w-3xl py-4 space-y-4">

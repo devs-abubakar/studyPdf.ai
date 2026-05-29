@@ -17,8 +17,7 @@ export async function POST(req){
     const userId= user.id
     const latestMessage = messages[messages.length - 1] 
     console.log("Latest message =====>",latestMessage)
-    let currentSessionId = sessionId
-    console.log("currentSession =====>",currentSessionId)
+    console.log("currentSession =====>",sessionId)
     console.log("user id is ===>",userId)
     
 //     const message = userChatHistory(query)
@@ -54,16 +53,13 @@ export async function POST(req){
 //     Answer in under 200 words.
 //     `;
     const title= "New chat"
-    if(!currentSessionId){
-        const chatSession = await UploadChatSessionDetails({userId:userId,title:title,supabase:supabase})
-        currentSessionId = chatSession.message.id
-    }
-    console.log("Currentsession after update ====>",currentSessionId)
-    const userMessage = await UplaodChatMessageDetails({sessionId:currentSessionId,message:latestMessage.content,role:"user",supabase:supabase})
+    const chatSession = await UploadChatSessionDetails({id:sessionId,userId:userId,title:title,supabase:supabase})
+    console.log("Currentsession after update ====>",sessionId)
+    const userMessage = await UplaodChatMessageDetails({sessionId:sessionId,message:latestMessage.content,role:"user",supabase:supabase})
     console.log("user message===> ",userMessage)
     const chatResponse = await chatGroq(messages)
-    const assistantMessage = await UplaodChatMessageDetails({sessionId:currentSessionId,message:chatResponse,role:"assistant",supabase:supabase})
+    const assistantMessage = await UplaodChatMessageDetails({sessionId:sessionId,message:chatResponse,role:"assistant",supabase:supabase})
     console.log("assistant message===> ",assistantMessage)
     console.log("chatResponse --->",chatResponse)
-    return NextResponse.json({status : true,response : chatResponse, sessionId : currentSessionId ,title : title})
+    return NextResponse.json({status : true,response : chatResponse,title : title})
 }

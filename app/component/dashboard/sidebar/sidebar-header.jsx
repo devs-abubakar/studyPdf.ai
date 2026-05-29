@@ -8,7 +8,8 @@ export function SidebarHeaderSection({
     
   function handleClick(){
       console.log("new message created")
-      createNewChat()
+      let sessionId = crypto.randomUUID()
+      createNewChat(sessionId,"new chat")
   }
   return (
     <div
