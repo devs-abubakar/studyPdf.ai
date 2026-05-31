@@ -1,15 +1,19 @@
-import { ChatGroq } from "@langchain/groq";
+import { createGroq } from '@ai-sdk/groq';
+import { streamText } from 'ai'; // Removed the hallucinated import
 
-export default async function chatGroq(messages){
-    const llm = new ChatGroq({
-    model: "llama-3.3-70b-versatile",
+export const groq = createGroq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+export default async function chatGroq(messages,onFinishCallback) {
+  const result = streamText({
+    model: groq('llama-3.3-70b-versatile'),
+    messages: messages,
     temperature: 0,
-    maxTokens: undefined,
     maxRetries: 2,
-    streaming:true
-})
-    
-    const llmResponse  =await llm.invoke(messages)
-    console.log("llm response--->",llmResponse)
-    return llmResponse.content
+    onFinish:onFinishCallback
+  });
+
+  // ✅ Use the method that matches your specific installed SDK version
+  return result.toTextStreamResponse(); 
 }

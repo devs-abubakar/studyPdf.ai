@@ -29,7 +29,7 @@ export function useMessages(activeChatId) {
         .eq("session_id", activeChatId)
         .order("created_at", { ascending: true })
         .range(0, 29); // Consider dynamic pagination later
-
+      console.log(data)
       if (error) {
         setError(error);
       } else if (data) {

@@ -16,13 +16,21 @@ export function ChatInput() {
   const activeChat = useChatStore((state)=>state.activeChat)
   const createNewChat = useChatStore((state)=>state.createNewChat)
   const addMessage = useChatStore((state)=>state.addMessage)
+  const appendToLastMessage = useChatStore((state) => state.appendToLastMessage)
   const chats = useChatStore((state)=>state.chats)
-  const currentChat = chats.find(c => c.id === activeChat)
+  const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
   const [selectedFile,setSelectedFile] = useState(null)
   const [filename, setFilename] = useState("")
   const fileRef = useRef(null)
 
+const handleKeyDown = (e)=>{
+  console.log(e)
+  if (e.key === "Enter" && !e.shiftKey){
+    e.preventDefault()
+    handleSubmit()
+  }
+}
   
 function handleFileChange(e){
 
@@ -52,26 +60,27 @@ async function getResponse(messages,sessionId) {
       },
       body: JSON.stringify({ messages : messages ,sessionId:sessionId })
     })
-    if (!response.ok) {
-  return {
-    success: false,
-    message: "API failed"
-  }
-}
+    if (!response.ok) { throw new Error("Api failed")}
+    addMessage("assistant", " ")
+    const reader = response.body.getReader()
+    console.log(reader)
+    const decoder = new TextDecoder()
+    let done = false
 
-    const data = await response.json()
-    console.log(data)
-    return data
-
-  } catch (err) {
-    console.error(err)
-
-    return {
-      success: false,
-      message: "Fetch failed"
+    while(!done){
+      const {value , done : doneReading} = await reader.read()
+      console.log(value)
+      console.log("done reading",doneReading)
+      done = doneReading
+      if(value){
+        const chunkValue = decoder.decode(value,{stream:true})
+        console.log("Recieved token",chunkValue)
+        appendToLastMessage(chunkValue)
+      }
     }
-  }
-}
+  }catch(err){
+        console.error(err)
+      }}
 
 async function uploadFile(formData){
     setUploadingFile(true)
@@ -134,7 +143,7 @@ async function handleSubmit() {
   console.log("Messages from zustand ==>",messages)
   console.log("current messages",currentMessages)
   const result = await getResponse(currentMessages,currentSessionId)
-  addMessage("assistant", result.response)
+  
 }
   function handleChange(e){
     e.preventDefault()
@@ -153,6 +162,7 @@ async function handleSubmit() {
             placeholder="Ask anything..."
             onChange={handleChange}
             value={query}
+            onKeyDown={handleKeyDown}
             className="
               min-h-13
               max-h-40
@@ -171,6 +181,7 @@ async function handleSubmit() {
           type="file"
           className="hidden"
           onChange={handleFileChange}
+
         />
           <Button
             disabled={uploadingFile}

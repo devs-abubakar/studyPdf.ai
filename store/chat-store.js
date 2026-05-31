@@ -3,10 +3,11 @@ import { create } from "zustand";
 export const useChatStore = create((set, get) => ({
   chats: [],
   activeChat: null,
+  
   setChats: (chats) => set({ chats }),
   setActiveChat: (chatId) => set({ activeChat: chatId }),
   
-  // NEW: Action to hydrate historical messages into a specific chat
+  // 1. Hydrate historical messages into a specific chat
   setHistoricalMessages: (sessionId, messages) => set((state) => ({
     chats: state.chats.map((chat) =>
       chat.sessionId === sessionId
@@ -15,6 +16,7 @@ export const useChatStore = create((set, get) => ({
     )
   })),
 
+  // 2. Initialize a clean new chat session
   createNewChat: (sessionId, title) => {
     const newChat = {
       sessionId,
@@ -25,10 +27,10 @@ export const useChatStore = create((set, get) => ({
     set((state) => ({
       chats: [newChat, ...state.chats],
       activeChat: newChat.sessionId
-      // BUG FIX: Removed the floating 'messages: []' that was overriding root state
     }));
   },
 
+  // 3. Add an entirely new complete message block (User prompts, or empty Assistant boxes)
   addMessage: (role, content) => {
     const { activeChat } = get();
     if (!activeChat) return;
@@ -46,5 +48,32 @@ export const useChatStore = create((set, get) => ({
           : chat
       )
     }));
-  },
+  }, // <--- This cleanly closes addMessage
+
+  // 4. Precision stream appender that modifies the final message in real-time
+  appendToLastMessage: (chunk) => {
+    set((state) => {
+      const activeChatId = state.activeChat;
+      if (!activeChatId) return state;
+
+      return {
+        chats: state.chats.map((chat) => {
+          if (chat.sessionId !== activeChatId) return chat;
+
+          const updatedMessages = [...chat.messages];
+          if (updatedMessages.length === 0) return chat;
+
+          const lastIndex = updatedMessages.length - 1;
+          const lastMessage = updatedMessages[lastIndex];
+
+          updatedMessages[lastIndex] = {
+            ...lastMessage,
+            content: (lastMessage.content || "") + chunk,
+          };
+
+          return { ...chat, messages: updatedMessages };
+        }),
+      };
+    });
+  }
 }));

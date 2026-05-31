@@ -14,3 +14,17 @@ export async function UploadChatSessionDetails({id,userId,title,supabase}){
         return {success:false,error:e?.message || e}
     }
 }
+
+export async function UpdateChatSessionDetails({id,userId,title,supabase}){
+    try{
+        const {data,error} = await supabase.from("chat_sessions").update({title:title}).eq("id",id).eq('user_id',userId).select()
+        if(error){
+            console.error(error)
+            return
+        }
+        return data
+    }catch(err){
+        console.error(err)
+        return 
+    }
+}
