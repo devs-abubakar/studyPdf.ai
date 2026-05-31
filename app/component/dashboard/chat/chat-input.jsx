@@ -23,6 +23,8 @@ export function ChatInput() {
   const [selectedFile,setSelectedFile] = useState(null)
   const [filename, setFilename] = useState("")
   const fileRef = useRef(null)
+  const [title,setTitle] = useState("")
+  const updateChatTitle = useChatStore((state)=>state.updateChatTitle)
 
 const handleKeyDown = (e)=>{
   console.log(e)
@@ -61,6 +63,12 @@ async function getResponse(messages,sessionId) {
       body: JSON.stringify({ messages : messages ,sessionId:sessionId })
     })
     if (!response.ok) { throw new Error("Api failed")}
+    const chatTitle = response.headers.get('x-chat-title')
+    if (chatTitle){ 
+      setTitle(chatTitle)
+      console.log(chatTitle)
+      updateChatTitle(sessionId,chatTitle)
+    }
     addMessage("assistant", " ")
     const reader = response.body.getReader()
     console.log(reader)
@@ -128,7 +136,7 @@ async function handleSubmit() {
   let currentSessionId = activeChat
   if(!currentSessionId){
     currentSessionId = crypto.randomUUID()
-    createNewChat(currentSessionId, currentQuery.slice(0, 5))
+    createNewChat(currentSessionId, title||"query")
     console.log("this is the session id created ===>",currentSessionId)
   }
   console.log("user message variable ==>",userMessage)

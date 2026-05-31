@@ -30,6 +30,13 @@ export const useChatStore = create((set, get) => ({
     }));
   },
 
+  updateChatTitle: (sessionId, title) => set((state) => ({
+  chats: state.chats.map((chat) =>
+    chat.sessionId === sessionId
+      ? { ...chat, title }
+      : chat
+  )
+})),
   // 3. Add an entirely new complete message block (User prompts, or empty Assistant boxes)
   addMessage: (role, content) => {
     const { activeChat } = get();

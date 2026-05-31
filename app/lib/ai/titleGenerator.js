@@ -1,4 +1,3 @@
-import { streamText } from "ai";
 import { smallLLM } from "./small_model";
 import { generateText } from "ai";
 
@@ -11,13 +10,14 @@ const FALLBACK_TITLES = [
   "Logic Thread", "Memory Node"
 ];
     
-    const SYSTEM_PROMPT=`You are a title generation engine. Your ONLY task is to summarize the user's prompt into a concise title of exactly 2 to 3 words.
+    const SYSTEM_PROMPT=`You are a title generation engine. Your ONLY task is to summarize the user's prompt into a concise title of exactly 2 to 3 words for the chat title.
 
 Rules:
+Title should be MEANINGFUL.
 
 Use ONLY the user's message as context.
 
-Output MUST be 2-3 words.
+Output MUST be 4 words max.
 
 Do not include quotes, periods, or formatting.
 

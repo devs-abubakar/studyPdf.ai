@@ -1,6 +1,6 @@
 export async function UplaodChatMessageDetails({message,role,sessionId,supabase}){
     try{
-        const {data, error} = await supabase.from("chat_messages").upsert({session_id:sessionId,content:message,role:role})
+        const {data, error} = await supabase.from("chat_messages").insert({session_id:sessionId,content:message,role:role})
         if (error){
             return{success:false, error: error}
         }
