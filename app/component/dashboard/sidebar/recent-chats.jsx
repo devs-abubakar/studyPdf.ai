@@ -16,14 +16,6 @@ export function RecentChats({collapsed}) {
     console.log("opening the chat with id : ",id)
     setActiveChat(id)
   }
-  useEffect(() => {
-  async function checkTool(){
-    if (activeChat){
-      const data = await getChatContext({sessionId:activeChat,supabase:supabase,query:"hello"})
-    }
-  }
-  checkTool()
-  }, [activeChat])
   
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { groq } from "@/app/lib/ai/chat_openai"
+import { google } from "@/app/lib/ai/chat_openai" 
 import { UpdateChatSessionDetails, UploadChatSessionDetails } from "@/app/lib/services/chat-session-service"
 import { NextResponse, after } from "next/server"
 import { createClient } from "@/app/lib/supabase/server"
@@ -6,6 +6,9 @@ import { UplaodChatMessageDetails } from "@/app/lib/services/chat-message-servic
 import { streamText } from "ai"
 import { TitleGenerator } from "@/app/lib/ai/titleGenerator"
 import { createServiceClient } from "@/app/lib/supabase/service"
+import { getChatContext } from "@/app/lib/rag/getChatContext"
+import { createTools } from "@/app/lib/tools"
+
 
 export async function POST(req) {
   const supabase = await createClient()
@@ -17,7 +20,6 @@ export async function POST(req) {
   const userId = user.id
   const latestMessage = messages[messages.length - 1]
   const isNew = messages.length === 1
-  
   let title = "untitled"
   let persisted = false
   if (isNew) {
@@ -49,9 +51,34 @@ after(
   }
 
   const result = streamText({
-    model: groq("llama-3.3-70b-versatile"),
-    prompt:messages,
+    model: google("gemini-2.0-flash"),
+    messages,
+    system: `You have access to getChatContext to fetch content from the user's uploaded documents.
+
+When the user asks about their documents, call getChatContext with their question as the query.
+After receiving the tool result, ALWAYS respond to the user with a helpful answer based on that context.
+Never stop after a tool call without generating a final text response.`,
+   tools: createTools(supabase,sessionId),
+    maxRetries:3,
+    maxSteps: 5,
+    experimental_continueSteps: true,   
+    onStepFinish(step){
+      console.log("Step :",JSON.stringify(step))
+    },
+    providerOptions: {
+    google: {
+      generationConfig: {
+        responseMimeType: "text/plain",
+      }
+    }}
+    ,
+    experimental_telemetry: {
+    isEnabled: true
+    },
     onFinish: async ({ text }) => {
+      if(!text || text.trim().length ===0){
+        console.error("Empty model output")
+      }
       try {
         await UplaodChatMessageDetails({ sessionId, message: text, role: "assistant", supabase })
       } catch (err) {

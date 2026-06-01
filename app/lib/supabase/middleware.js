@@ -35,7 +35,7 @@ export async function updateSession(request){
         }
     )
     const {data:{user}}=await supabase.auth.getUser()
-    console.log(user)
+
     if (!user && isProtected){
         console.log("user is not valid and trying to access protected routes")
         return NextResponse.redirect(new URL("/signIn",request.url))

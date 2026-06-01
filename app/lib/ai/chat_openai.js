@@ -1,5 +1,7 @@
 import { createGroq } from '@ai-sdk/groq';
 import { streamText } from 'ai'; // Removed the hallucinated import
+import {createDeepSeek} from "@ai-sdk/deepseek"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 
 export const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY,
@@ -17,3 +19,7 @@ export default async function chatGroq(messages,onFinishCallback) {
   // ✅ Use the method that matches your specific installed SDK version
   return result.toTextStreamResponse(); 
 }
+
+export const google = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
+})

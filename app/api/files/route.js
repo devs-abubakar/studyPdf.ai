@@ -23,12 +23,8 @@ export async function POST(req){
       return
     }
     console.log("before pdfparse")
-    const fileId = randomUUID()
-    const context ={
-      userId,
-      fileId
-    }
-    const storedFile = await storeFile(file,userId,sessionId)
+    const fileId = crypto.randomUUID()
+    const storedFile = await storeFile({file:file,userId:userId,fileId:fileId,sessionId:sessionId,supabase:supabase})
     console.log(storedFile)
     if (!storedFile.success){
       throw new Error("Failed to store")
@@ -39,7 +35,7 @@ export async function POST(req){
     const chunkedDocs = await chunkDoc(docs)
     
 
-    const embeddedChunks = await embedChunk(chunkedDocs,context.fileId,context.userId)
+    const embeddedChunks = await embedChunk(chunkedDocs,fileId,userId)
     
     // Sending response to the frontend
     return Response.json({status:true, message:"success"})

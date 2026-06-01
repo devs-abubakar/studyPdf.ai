@@ -1,4 +1,3 @@
-import { createClient } from '@/app/lib/supabase/server'
 
 async function uploadFileDetails({
   supabase,
@@ -23,6 +22,7 @@ async function uploadFileDetails({
   return data;
 }
 
+
 async function uploadSessionFileDetails({
   supabase,
   sessionId,
@@ -41,10 +41,8 @@ async function uploadSessionFileDetails({
 
   return data;
 }
-export async function storeFile(file,userId,sessionId){
-    const supabase = await createClient()
+export async function storeFile({file,userId,fileId,sessionId,supabase}){
     const fileExt = file.name.split(".").pop()
-    const fileId = crypto.randomUUID();
     const filepath = `${userId}/${fileId}.${fileExt}`
     try{
         

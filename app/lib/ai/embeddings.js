@@ -11,11 +11,11 @@ export async function embedChunk(chunks, fileId, userId) {
       
       content: chunk.pageContent,
       metadata: {
-      file_id:fileId,
       chunkId: i,
     },
     embedding: vectors[i],
     user_id: userId,
+    file_id:fileId,
     
   }));
   try{
