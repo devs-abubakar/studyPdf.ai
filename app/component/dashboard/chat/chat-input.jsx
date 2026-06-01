@@ -25,9 +25,10 @@ export function ChatInput() {
   const fileRef = useRef(null)
   const [title,setTitle] = useState("")
   const updateChatTitle = useChatStore((state)=>state.updateChatTitle)
-
-const handleKeyDown = (e)=>{
-  console.log(e)
+  const updateChatPersisted = useChatStore((state)=>state.updateChatPersisted)
+  
+  const handleKeyDown = (e)=>{
+  
   if (e.key === "Enter" && !e.shiftKey){
     e.preventDefault()
     handleSubmit()
@@ -52,6 +53,7 @@ function handleRemoveFile(){
   setUploadingFile(false)
   setSelectedFile(null)
   setFilename("")
+  fileRef.current.value = ""
 }
 async function getResponse(messages,sessionId) {
   try {
@@ -64,6 +66,11 @@ async function getResponse(messages,sessionId) {
     })
     if (!response.ok) { throw new Error("Api failed")}
     const chatTitle = response.headers.get('x-chat-title')
+    const persisted = response.headers.get("x-chat-persisted")
+    if(persisted){
+      updateChatPersisted(persisted)
+      
+    }
     if (chatTitle){ 
       setTitle(chatTitle)
       console.log(chatTitle)
@@ -89,13 +96,13 @@ async function getResponse(messages,sessionId) {
   }catch(err){
         console.error(err)
       }}
-
+      
 async function uploadFile(formData){
-    setUploadingFile(true)
-    try{
-      const response = await fetch("/api/files",{
-        method : "POST",
-        body:formData
+  setUploadingFile(true)
+  try{
+    const response = await fetch("/api/files",{
+      method : "POST",
+      body:formData
       }
       )
       setUploadingFile(false)
@@ -106,12 +113,18 @@ async function uploadFile(formData){
       console.log("An error occured : ",e)
       setUploadingFile(false)
     }
-}
+  }
 
 useEffect(() => {
   if (!selectedFile) return
-
+  let targetSessionId = activeChat
   const formData = new FormData()
+  if(!targetSessionId){
+    targetSessionId = crypto.randomUUID()
+    createNewChat(targetSessionId, title||"untitled")
+    console.log("this is the session id created ===>",targetSessionId)
+  }
+  formData.append("sessionId",targetSessionId)
   formData.append("file", selectedFile)
 
   uploadFile(formData)
@@ -124,6 +137,7 @@ function handleSelectItem(type){
   
 }
 
+let currentSessionId = activeChat
 async function handleSubmit() {
   if (!query.trim()) return
 
@@ -133,10 +147,9 @@ async function handleSubmit() {
     role: "user",
     content: currentQuery
   }
-  let currentSessionId = activeChat
   if(!currentSessionId){
     currentSessionId = crypto.randomUUID()
-    createNewChat(currentSessionId, title||"query")
+    createNewChat(currentSessionId, title||"untitled")
     console.log("this is the session id created ===>",currentSessionId)
   }
   console.log("user message variable ==>",userMessage)

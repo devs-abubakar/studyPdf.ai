@@ -21,7 +21,8 @@ export const useChatStore = create((set, get) => ({
     const newChat = {
       sessionId,
       title,
-      messages: [] 
+      messages: [],
+      persisted:false 
     };
     
     set((state) => ({
@@ -34,6 +35,12 @@ export const useChatStore = create((set, get) => ({
   chats: state.chats.map((chat) =>
     chat.sessionId === sessionId
       ? { ...chat, title }
+      : chat
+  )
+})),  updateChatPersisted: (sessionId, persisted) => set((state) => ({
+  chats: state.chats.map((chat) =>
+    chat.sessionId === sessionId
+      ? { ...chat, persisted }
       : chat
   )
 })),

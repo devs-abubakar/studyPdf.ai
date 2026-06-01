@@ -1,6 +1,6 @@
 import { supabase } from "@/app/lib/supabase/client";
 import { useState, useEffect } from "react";
-import { useChatStore } from "@/store/chat-store"; // Adjust path as needed
+import { useChatStore } from "@/store/chat-store"; 
 
 export function useMessages(activeChatId) {
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,11 @@ export function useMessages(activeChatId) {
   useEffect(() => {
     if (!activeChatId) return;
 
-    // PERFORMANCE WIN: If we already have messages in memory, don't re-fetch from Supabase
+    if(!currentChat?.persisted){
+      console.log(currentChat)
+      return
+      };
+    // If we already have messages in memory, don't re-fetch from Supabase
     if (currentChat && currentChat.messages && currentChat.messages.length > 0) {
       return; 
     }

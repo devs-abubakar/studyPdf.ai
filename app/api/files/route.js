@@ -17,6 +17,7 @@ export async function POST(req){
     const userId= user.id
     const data = await req.formData()
     const file = data.get("file")
+    const sessionId = data.get("sessionId")
     console.log("file recieved", file)
     if (!file){
       return
@@ -27,7 +28,7 @@ export async function POST(req){
       userId,
       fileId
     }
-    const storedFile = await storeFile(file,userId)
+    const storedFile = await storeFile(file,userId,sessionId)
     console.log(storedFile)
     if (!storedFile.success){
       throw new Error("Failed to store")

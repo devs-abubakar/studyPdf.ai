@@ -9,7 +9,7 @@ export function SidebarHeaderSection({
   function handleClick(){
       console.log("new message created")
       let sessionId = crypto.randomUUID()
-      createNewChat(sessionId,"new chat")
+      createNewChat(sessionId,"untitled")
   }
   return (
     <div

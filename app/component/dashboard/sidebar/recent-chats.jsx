@@ -3,6 +3,7 @@ import {useChatStore} from "@/store/chat-store"
 import { useEffect, useState } from "react"
 import { supabase } from "@/app/lib/supabase/client"
 import { useMessages } from "@/hooks/useMessages"
+import { getChatContext } from "@/app/lib/rag/getChatContext"
 
 
 export function RecentChats({collapsed}) {
@@ -16,8 +17,18 @@ export function RecentChats({collapsed}) {
     setActiveChat(id)
   }
   useEffect(() => {
+  async function checkTool(){
+    if (activeChat){
+      const data = await getChatContext({sessionId:activeChat,supabase:supabase,query:"hello"})
+    }
+  }
+  checkTool()
+  }, [activeChat])
+  
+
+  useEffect(() => {
     async function loadChats(){
-      const {data,error} = await supabase.from("chat_sessions").select('id,title,created_at').order('created_at',{ascending:false}).range(0,9)
+      const {data,error} = await supabase.from("chat_sessions").select('id,title,created_at,persisted').order('created_at',{ascending:false}).range(0,9)
       if(error){
         alert("Error while fetching the recent chats")
       }
@@ -25,7 +36,8 @@ export function RecentChats({collapsed}) {
       const formattedChats = data.map((chat)=>({
           sessionId:chat.id,
           title:chat.title,
-          messages:[]
+          messages:[],
+          persisted:chat.persisted
         })
       )
       setChats(formattedChats)

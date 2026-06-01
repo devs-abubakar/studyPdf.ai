@@ -42,7 +42,7 @@ export function ChatBox() {
   useEffect(() => {
     handleToBottom()
   }, [messages])
-  console.log(window.scrollY)
+
   return (
     <div className="relative flex flex-col min-h-0 flex-1 w-full">
       {!activeChat ? (
