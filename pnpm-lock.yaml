@@ -24,7 +24,7 @@ importers:
         specifier: ^3.0.67
         version: 3.0.67(zod@4.4.3)
       '@langchain/community':
-        specifier: ^1.1.27
+        specifier: ^1.1.29
         version: 1.1.29(@browserbasehq/stagehand@1.0.1(@playwright/test@1.60.0)(deepmerge@4.3.1)(dotenv@17.4.2)(openai@6.39.1(zod@4.4.3))(zod@4.4.3))(@ibm-cloud/watsonx-ai@1.7.13)(@langchain/core@1.1.48(@opentelemetry/api@1.9.1)(openai@6.39.1(zod@4.4.3)))(@opentelemetry/api@1.9.1)(@supabase/supabase-js@2.106.2)(ibm-cloud-sdk-core@5.4.20)(ignore@7.0.5)(jsonwebtoken@9.0.3)(openai@6.39.1(zod@4.4.3))(pdf-parse@1.1.4)(playwright@1.60.0)
       '@langchain/core':
         specifier: ^1.1.42
@@ -35,6 +35,9 @@ importers:
       '@langchain/groq':
         specifier: ^1.2.0
         version: 1.2.1(@langchain/core@1.1.48(@opentelemetry/api@1.9.1)(openai@6.39.1(zod@4.4.3)))
+      '@langchain/langgraph':
+        specifier: ^1.3.2
+        version: 1.3.2(@langchain/core@1.1.48(@opentelemetry/api@1.9.1)(openai@6.39.1(zod@4.4.3)))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod-to-json-schema@3.25.2(zod@4.4.3))(zod@4.4.3)
       '@langchain/openai':
         specifier: ^1.4.7
         version: 1.4.7(@langchain/core@1.1.48(@opentelemetry/api@1.9.1)(openai@6.39.1(zod@4.4.3)))
