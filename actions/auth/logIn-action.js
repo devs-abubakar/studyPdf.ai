@@ -14,8 +14,8 @@ export async function logInUser(formData){
     const {data , error} =await supabase.auth.signInWithPassword({
         email : email,
         password : password
-    }
-)
+    })
+    console.log(data)
     if (error){
         return {succes : false, message : `Error occured : ${error}`}
     }

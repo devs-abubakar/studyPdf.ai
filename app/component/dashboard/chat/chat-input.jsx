@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useChatStore } from '@/store/chat-store'
 import {UploadDropdown} from './input/option-drawer'
 import FilePill from './input/file-pill'
+import { startsWith } from 'zod'
 
  
 
@@ -84,13 +85,29 @@ async function getResponse(messages,sessionId) {
 
     while(!done){
       const {value , done : doneReading} = await reader.read()
-      console.log(value)
+      console.log("this is the value of the reader",value)
       console.log("done reading",doneReading)
       done = doneReading
       if(value){
         const chunkValue = decoder.decode(value,{stream:true})
-        console.log("Recieved token",chunkValue)
-        appendToLastMessage(chunkValue)
+        const lines = chunkValue.split("\n")
+        console.log("lines of chunk value",lines)
+        for (const line of lines){
+          console.log("line of lines value",line)
+          if(!line.startsWith("data:")) continue
+          const jsonStr = line.replace("data:","").trim()
+          if(!jsonStr) continue
+          if(jsonStr==='[Done]') continue
+          try{
+            const parsedJson = JSON.parse(jsonStr)
+            if (parsedJson.type === "token"){
+              appendToLastMessage(parsedJson.content)
+            }
+          }catch(e){
+            console.log("invalied sse line ",line)
+          }
+
+        }
       }
     }
   }catch(err){
