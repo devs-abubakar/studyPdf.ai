@@ -1,15 +1,23 @@
-import { tool } from 'ai'
-import { z } from 'zod'
-import { getChatContext } from "@/app/lib/rag/getChatContext"
+import { ChatGroq } from "@langchain/groq";
+import { tool } from "@langchain/core/tools";
+import { z } from "zod";
 
-export const createChatContextTool = (supabase, sessionId) =>
-  tool({
-    description: 'Fetches relevant chunks from user uploaded documents or files in the session',
-    inputSchema: z.object({                          // ← was `parameters` in v4
-      query: z.string().describe('User question used to query documents'),
-    }),
-    execute: async ({ query }) => {
-      console.log("tool hit:", query)
-      return getChatContext({ sessionId, query, supabase })
-    }
-  })
+const llm = new ChatGroq({
+  apiKey: process.env.GROQ_API_KEY,
+  model: "meta-llama/llama-4-scout-17b-16e-instruct",
+});
+
+const testTool = tool(
+  async ({ query }) => {
+    return `You searched for: ${query}`;
+  },
+  {
+    name: "test_search",
+    description: "Test tool",
+    schema: z.object({ query: z.string() }),
+  }
+);
+
+const llmWithTools = llm.bindTools([testTool]);
+const response = await llmWithTools.invoke([{ role: "user", content: "search for hello" }]);
+console.log(response.tool_calls); // Should show the tool call

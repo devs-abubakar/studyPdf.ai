@@ -1,16 +1,19 @@
-import { google } from "@/app/lib/ai/chat_openai" 
+import { google, groq } from "@/app/lib/ai/chat_openai" 
 import { UpdateChatSessionDetails, UploadChatSessionDetails } from "@/app/lib/services/chat-session-service"
 import { NextResponse, after } from "next/server"
 import { createClient } from "@/app/lib/supabase/server"
-import { UplaodChatMessageDetails } from "@/app/lib/services/chat-message-service"
-import { streamText } from "ai"
+import { UploadChatMessageDetails } from "@/app/lib/services/chat-message-service"
 import { TitleGenerator } from "@/app/lib/ai/titleGenerator"
 import { createServiceClient } from "@/app/lib/supabase/service"
-import { getChatContext } from "@/app/lib/rag/getChatContext"
-import { createTools } from "@/app/lib/tools"
+import { createDocumentAgent, runAgentAndCollectResponse } from "@/app/lib/langgraph/agent"
+import { convertToLangChainMessages } from "@/app/lib/langgraph/state"
 
+export const runtime = "nodejs"
+export const maxDuration = 60
 
 export async function POST(req) {
+  const startTime = Date.now()
+  try{
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ status: 401, message: "unauthorized user" })
@@ -37,7 +40,7 @@ after(
     UpdateChatSessionDetails({ id: sessionId, userId, title, supabase: serviceSupabase })
       .then((data) => console.log("✅ title updated:", data))
       .catch(err => console.error("❌ title update failed:", err)),
-    UplaodChatMessageDetails({ sessionId:sessionId, message: latestMessage.content, role: "user", supabase: serviceSupabase })
+    UploadChatMessageDetails({ sessionId:sessionId, message: latestMessage.content, role: "user", supabase: serviceSupabase })
       .then((data) => console.log("✅ user message saved:", data))
       .catch(err => console.error("❌ user message failed:", err))
   ])
@@ -45,51 +48,67 @@ after(
   } else {
     const serviceSupabase = createServiceClient()
     after(
-      UplaodChatMessageDetails({ sessionId, message: latestMessage.content, role: "user", supabase : serviceSupabase })
+      UploadChatMessageDetails({ sessionId, message: latestMessage.content, role: "user", supabase : serviceSupabase })
         .catch(err => console.error("message save failed:", err))
     )
   }
 
-  const result = streamText({
-    model: google("gemini-2.0-flash"),
-    messages,
-    system: `You have access to getChatContext to fetch content from the user's uploaded documents.
-
-When the user asks about their documents, call getChatContext with their question as the query.
-After receiving the tool result, ALWAYS respond to the user with a helpful answer based on that context.
-Never stop after a tool call without generating a final text response.`,
-   tools: createTools(supabase,sessionId),
-    maxRetries:3,
-    maxSteps: 5,
-    experimental_continueSteps: true,   
-    onStepFinish(step){
-      console.log("Step :",JSON.stringify(step))
-    },
-    providerOptions: {
-    google: {
-      generationConfig: {
-        responseMimeType: "text/plain",
-      }
-    }}
-    ,
-    experimental_telemetry: {
-    isEnabled: true
-    },
-    onFinish: async ({ text }) => {
-      if(!text || text.trim().length ===0){
-        console.error("Empty model output")
-      }
-      try {
-        await UplaodChatMessageDetails({ sessionId, message: text, role: "assistant", supabase })
-      } catch (err) {
-        console.error("assistant save failed", err)
-      }
-    }
-  })
-  return result.toTextStreamResponse({
-    headers: {
-      ...(isNew && {"x-chat-title": title,"x-chat-persisted":persisted,"x-chat-status": "success"}),
-      "x-chat-status": "success"
-    }
-  })
+    console.log("[Chat] Creating document agent...");
+    const agent = await createDocumentAgent(supabase, sessionId);
+    const langChainMessages = convertToLangChainMessages(messages);
+    
+    console.log("[Chat] Running agent...");
+    const response = await runAgentAndCollectResponse(agent, langChainMessages, sessionId);
+    
+    console.log(`[Chat] Response generated (${response.length} chars)`);
+    
+    // Save assistant response
+    await UploadChatMessageDetails({
+      sessionId,
+      message: response,
+      role: "assistant",
+      supabase,
+    });
+    
+    // Create streaming response
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(response));
+        controller.close();
+      },
+    });
+    
+    console.log(`[Chat] Total time: ${Date.now() - startTime}ms`);
+    
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        ...(isNew && {
+          "x-chat-title": encodeURIComponent(title),
+          "x-chat-persisted": "true",
+          "x-chat-status": "success",
+        }),
+      },
+    });
+    
+  } catch (error) {
+    console.error("[Chat] Error:", error);
+    
+    const errorMessage = "I'm having trouble processing your request. Please try again in a moment.";
+    
+    const encoder = new TextEncoder();
+    const errorStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(errorMessage));
+        controller.close();
+      },
+    });
+    
+    return new Response(errorStream, {
+      headers: { "Content-Type": "text/event-stream" },
+      status: 200, // Return 200 with error message instead of 500
+    });
+  }
 }
