@@ -3,6 +3,8 @@ import { createAgentTools } from "./tools";
 import { GraphState } from "./state";
 import {StateGraph,START} from "@langchain/langgraph"
 import { createAgentNode, createToolsNode, shouldContinue } from "./nodes";
+import { AIMessageChunk } from "@langchain/core/messages";
+
 
 const LLM_CONFIG = {
   model: "meta-llama/llama-4-scout-17b-16e-instruct",
@@ -30,51 +32,48 @@ export async function createDocumentAgent(supabase,sessionId){
   return workFlow.compile()
 }
 export async function* streamAgentResponse(agent, messages, sessionId) {
+  console.log("messages in streamAgentRespons",messages)
   const stream = await agent.stream(
     { messages },
     {
       configurable: { thread_id: sessionId },
-      streamMode: "values",
+      streamMode: "messages",
     }
   );
   
-  for await (const chunk of stream) {
-    const lastMessage = chunk.messages?.[chunk.messages.length - 1];
-    
-    if (lastMessage && lastMessage.content && typeof lastMessage.content === "string") {
-      yield {
-        content: lastMessage.content,
-        isToolCall: false,
-      };
-    }
-    
-    if (lastMessage?.tool_calls?.length > 0) {
-      yield {
-        toolCalls: lastMessage.tool_calls,
-        isToolCall: true,
-      };
-    }
-  }
-}
+  let fullText = ""
+  let toolStarted=false
 
-export async function runAgentAndCollectResponse(agent, messages, sessionId) {
-  let fullResponse = "";
-  
-  const stream = await agent.stream(
-    { messages },
-    {
-      configurable: { thread_id: sessionId },
-      streamMode: "values",
+  for await (const [message, metadata] of stream) {
+    // guard — skip undefined/null chunks
+    if (!message) continue
+
+    const isAIChunk = message instanceof AIMessageChunk
+    if (!isAIChunk) continue  // skip HumanMessage, ToolMessage, etc.
+
+    const hasText = typeof message.content === "string" && message.content.length > 0
+    const hasToolCall = (message.tool_calls?.length ?? 0) > 0 || (message.tool_call_chunks?.length ?? 0) > 0
+
+    if (hasToolCall && !toolStarted) {
+      toolStarted = true
+      const toolName = message.tool_calls?.[0]?.name
+                    ?? message.tool_call_chunks?.[0]?.name
+                    ?? "searchUserDocuments"
+      yield { type: "tool_start", toolName }
     }
-  );
-  
-  for await (const chunk of stream) {
-    const lastMessage = chunk.messages?.[chunk.messages.length - 1];
-    
-    if (lastMessage?.content && typeof lastMessage.content === "string") {
-      fullResponse = lastMessage.content; // Replace with latest (streaming not needed for collection)
+
+    if (!hasToolCall && toolStarted) {
+      // LLM is generating text again after tool — tool is done
+      toolStarted = false
+      yield { type: "tool_end" }
+    }
+
+    if (hasText && !hasToolCall) {
+      fullText += message.content
+      yield { type: "token", content: message.content }
     }
   }
-  
-  return fullResponse || "I couldn't generate a response. Please try again.";
+
+  // yield done exactly once, after the loop
+  yield { type: "done", fullText }
 }

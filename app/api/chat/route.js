@@ -5,8 +5,9 @@ import { createClient } from "@/app/lib/supabase/server"
 import { UploadChatMessageDetails } from "@/app/lib/services/chat-message-service"
 import { TitleGenerator } from "@/app/lib/ai/titleGenerator"
 import { createServiceClient } from "@/app/lib/supabase/service"
-import { createDocumentAgent, runAgentAndCollectResponse } from "@/app/lib/langgraph/agent"
+import { createDocumentAgent} from "@/app/lib/langgraph/agent"
 import { convertToLangChainMessages } from "@/app/lib/langgraph/state"
+import { buildAgentStream } from "@/app/lib/langgraph/stream"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
@@ -57,42 +58,11 @@ after(
     const agent = await createDocumentAgent(supabase, sessionId);
     const langChainMessages = convertToLangChainMessages(messages);
     
-    console.log("[Chat] Running agent...");
-    const response = await runAgentAndCollectResponse(agent, langChainMessages, sessionId);
-    
-    console.log(`[Chat] Response generated (${response.length} chars)`);
-    
-    // Save assistant response
-    await UploadChatMessageDetails({
-      sessionId,
-      message: response,
-      role: "assistant",
-      supabase,
-    });
-    
-    // Create streaming response
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(response));
-        controller.close();
-      },
-    });
-    
-    console.log(`[Chat] Total time: ${Date.now() - startTime}ms`);
-    
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        ...(isNew && {
-          "x-chat-title": encodeURIComponent(title),
-          "x-chat-persisted": "true",
-          "x-chat-status": "success",
-        }),
-      },
-    });
-    
+    return buildAgentStream({agent,sessionId,messages:langChainMessages,responseHeaders: isNew ? {
+        "x-chat-title": encodeURIComponent(title),
+        "x-chat-persisted": "true",
+        "x-chat-status": "success",
+      } : {},})
   } catch (error) {
     console.error("[Chat] Error:", error);
     
