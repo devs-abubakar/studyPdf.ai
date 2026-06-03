@@ -1,7 +1,7 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getChatContext } from "@/app/lib/rag/getChatContext";
-
+import { searchTool } from "../tools/searchInternet";
 export function createDocumentSearchTool(supabase, sessionId) {
   return tool(
     async ({ query }) => {
@@ -58,5 +58,5 @@ export function createDocumentSearchTool(supabase, sessionId) {
 
 
 export function createAgentTools(supabase, sessionId) {
-  return [createDocumentSearchTool(supabase, sessionId)];
+  return [createDocumentSearchTool(supabase, sessionId),searchTool];
 }
