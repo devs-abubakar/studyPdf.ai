@@ -11,7 +11,7 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
         async start(controller){
             try{
                 for await(const event of streamAgentResponse(agent,messages,sessionId)){
-                    console.log("event in the controller ===")
+                    console.log("event in the controller ===",event)
                     if (event.type === "token"){
                         fullResponse+=event.content
                         controller.enqueue(

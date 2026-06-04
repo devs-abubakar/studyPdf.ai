@@ -150,3 +150,136 @@
   text-overflow: ellipsis;  /* Adds the '...' at the end */
   width: 100%;             /* Requires a defined width or max-width */
 }
+.ai-message-content {
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+/* Code blocks — horizontal scroll, no overflow */
+.ai-message-content pre {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin: 0.75rem 0;
+  background-color: oklch(0.18 0.008 49.3);   /* slightly lighter than dark bg */
+  border: 1px solid var(--border);
+}
+
+.ai-message-content pre code {
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  background: transparent;
+  padding: 0;
+  color: oklch(0.88 0.01 67.8);
+}
+
+/* Inline code */
+.ai-message-content code:not(pre code) {
+  background-color: oklch(0.922 0.005 34.3 / 40%);  /* --border with opacity */
+  color: var(--color-brand-purple);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+/* Paragraph spacing — remove default margins crowding */
+.ai-message-content p {
+  margin: 0.4rem 0;
+  line-height: 1.65;
+}
+.ai-message-content p:first-child { margin-top: 0; }
+.ai-message-content p:last-child  { margin-bottom: 0; }
+
+/* Lists */
+.ai-message-content ul,
+.ai-message-content ol {
+  padding-left: 1.4rem;
+  margin: 0.5rem 0;
+}
+.ai-message-content li {
+  margin: 0.3rem 0;
+  line-height: 1.6;
+}
+.ai-message-content li::marker {
+  color: var(--color-brand-pink);   /* ← uses your brand pink for bullets */
+}
+
+/* Headings */
+.ai-message-content h1,
+.ai-message-content h2,
+.ai-message-content h3,
+.ai-message-content h4 {
+  font-family: var(--font-display);     /* Outfit — your display font */
+  font-weight: 600;
+  margin: 0.9rem 0 0.4rem;
+  line-height: 1.3;
+  color: var(--foreground);
+}
+.ai-message-content h1 { font-size: 1.2rem; }
+.ai-message-content h2 { font-size: 1.1rem; }
+.ai-message-content h3 { font-size: 1rem;   }
+
+/* Strong / Bold */
+.ai-message-content strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* Blockquotes */
+.ai-message-content blockquote {
+  border-left: 3px solid var(--color-brand-pink);
+  padding-left: 0.85rem;
+  margin: 0.6rem 0;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+/* Horizontal rule */
+.ai-message-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.75rem 0;
+}
+
+/* Links */
+.ai-message-content a {
+  color: var(--color-brand-pink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ai-message-content a:hover {
+  color: var(--color-brand-pink-dark);
+}
+
+/* Dark mode adjustments */
+.dark .ai-message-content pre {
+  background-color: oklch(0.12 0.005 49.3);
+  border-color: var(--border);
+}
+
+.dark .ai-message-content code:not(pre code) {
+  background-color: oklch(1 0 0 / 8%);
+  color: var(--color-brand-pink);
+}
+.ai-message-content pre::-webkit-scrollbar,
+.ai-message-content pre code::-webkit-scrollbar {
+  height: 4px;
+}
+
+.ai-message-content pre::-webkit-scrollbar-track,
+.ai-message-content pre code::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-message-content pre::-webkit-scrollbar-thumb,
+.ai-message-content pre code::-webkit-scrollbar-thumb {
+  background: oklch(1 0 0 / 20%);
+  border-radius: 999px;
+}

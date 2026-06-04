@@ -7,13 +7,14 @@ import { AIMessageChunk } from "@langchain/core/messages";
 
 
 const LLM_CONFIG = {
-  model: "meta-llama/llama-4-scout-17b-16e-instruct",
+  model: "llama-3.3-70b-versatile",
   temperature: 0.7,
   maxRetries: 2,
 };
 
 export async function createDocumentAgent(supabase,sessionId){
   const llm =new ChatGroq({
+    maxTokens:4096,
     apiKey:process.env.GROQ_API_KEY,
     ...LLM_CONFIG
   })

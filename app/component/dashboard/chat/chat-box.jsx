@@ -1,46 +1,93 @@
-import React, { useEffect,useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChatInput } from './chat-input';
 import { useChatStore } from '@/store/chat-store';
 import WelcomeScreen from './chat-welcome';
 import markdownit from 'markdown-it';
+import markdownitHighlightjs from 'markdown-it-highlightjs';
+import 'highlight.js/styles/github-dark.css';
 import { useMessages } from '@/hooks/useMessages';
 import ScrollToBottom from './scroll-to-bottom';
+
+
+const md = new markdownit({ 
+  html: false,      // XSS safe
+  breaks: true, 
+  linkify: true,
+  typographer: true
+}).use(markdownitHighlightjs, { auto: true, code: true })
+
+// open links in new tab
+const defaultLinkRender = md.renderer.rules.link_open ||
+  function(tokens, idx, options, env, self) {
+    return self.renderToken(tokens, idx, options)
+  }
+md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+  tokens[idx].attrSet('target', '_blank')
+  tokens[idx].attrSet('rel', 'noopener noreferrer')
+  return defaultLinkRender(tokens, idx, options, env, self)
+}
 
 export function ChatBox() {
   const activeChat = useChatStore((s) => s.activeChat);
   const currentChat = useChatStore((s) =>
     s.chats.find((c) => c.sessionId === s.activeChat)
   );
-  const messages = currentChat?.messages ?? []; 
-  const [showBtn,setShowBtn]= useState(false)
-  const md = new markdownit({ html: true, breaks: true, linkify: true });
-  const chatRef = useRef(null)
-  const bottomRef = useRef(null)
+  const messages = currentChat?.messages ?? [];
+  const [showBtn, setShowBtn] = useState(false);
+  const chatRef = useRef(null);
+  const bottomRef = useRef(null);
   const { loading, error } = useMessages(activeChat);
-  
+
+  // temporarily add this just to see output
+console.log(md.render("```javascript\nconst x = 1\n```"))
+
   const handleScroll = () => {
-  const el = chatRef.current;
-  if (!el) return;
+    const el = chatRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowBtn(distanceFromBottom > 120);
+  };
 
-  const threshold = 120;
-
-  const distanceFromBottom =
-    el.scrollHeight - el.scrollTop - el.clientHeight;
-
-  const userIsUp = distanceFromBottom > threshold;
-
-  setShowBtn(userIsUp);
-};
-
-  function handleToBottom(){
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block:"end"
-    })  
+  function handleToBottom() {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }
 
   useEffect(() => {
     handleToBottom()
+  }, [messages])
+
+  // ✅ inject copy buttons after new messages render
+  useEffect(() => {
+    const container = chatRef.current
+    if (!container) return
+
+    container.querySelectorAll('pre:not([data-has-copy])').forEach((pre) => {
+      pre.setAttribute('data-has-copy', 'true')
+
+      const lang = pre.querySelector('code')
+        ?.className?.match(/language-(\w+)/)?.[1] ?? 'code'
+
+      const header = document.createElement('div')
+      header.className = 'code-block-header'
+      header.innerHTML = `
+        <span class="code-lang">${lang}</span>
+        <button class="copy-btn">Copy</button>
+      `
+      header.querySelector('.copy-btn').addEventListener('click', () => {
+        const code = pre.querySelector('code')?.innerText ?? ''
+        navigator.clipboard.writeText(code).then(() => {
+          const btn = header.querySelector('.copy-btn')
+          btn.textContent = 'Copied!'
+          btn.classList.add('copied')
+          setTimeout(() => {
+            btn.textContent = 'Copy'
+            btn.classList.remove('copied')
+          }, 2000)
+        })
+      })
+
+      pre.prepend(header)
+    })
   }, [messages])
 
   return (
@@ -48,43 +95,51 @@ export function ChatBox() {
       {!activeChat ? (
         <WelcomeScreen />
       ) : (
-        <div ref={chatRef} onScroll={handleScroll}  className="absolute inset-0 flex-1 overflow-y-auto pb-36 px-4">
+        <div ref={chatRef} onScroll={handleScroll} className="absolute inset-0 flex-1 overflow-y-auto pb-36 px-4">
           <div className="mx-auto max-w-3xl py-4 space-y-4">
-            
-            {/* Displaying from Zustand, capturing both History and Real-Time */}
+
             {messages.map((msg, id) => {
               const isUser = msg.role === "user";
-
               return (
                 <div key={id} className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-3 break-words ${
-                      isUser ? "bg-brand-purple text-white rounded-br-md" : "bg-muted text-foreground rounded-bl-md"
-                    }`}
-                  >
-                    <div
-                      className="text-sm leading-relaxed whitespace-pre-wrap prose prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: md.render(msg.content ?? ""),
-                      }}
-                    />
+                  <div className={`min-w-0 max-w-[80%] rounded-2xl px-4 py-3 ${
+                    isUser
+                      ? "bg-brand-purple text-white rounded-br-md"
+                      : "bg-muted text-foreground rounded-bl-md"
+                  }`}>
+
+                    {isUser ? (
+                      // ✅ plain text — no markdown needed for user messages
+                      <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
+                        {msg.content}
+                      </p>
+                    ) : (
+                      // ✅ AI messages — full markdown + syntax highlighting
+                      <div
+                        className="text-sm leading-relaxed ai-message-content"
+                        dangerouslySetInnerHTML={{
+                          __html: md.render(msg.content ?? ""),
+                        }}
+                      />
+                    )}
 
                   </div>
                 </div>
               );
             })}
-            
-            {loading && <div className="text-center text-sm text-gray-500">Loading history...</div>}
-            
+
+            {loading && (
+              <div className="text-center text-sm text-gray-500">Loading history...</div>
+            )}
           </div>
 
-                <div ref={bottomRef} />
+          <div ref={bottomRef} />
         </div>
       )}
 
-      {/* Input Area */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-background via-background/80 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-2">
-          {showBtn && <ScrollToBottom onClick={handleToBottom}/> }
+        {showBtn && <ScrollToBottom onClick={handleToBottom} />}
         <ChatInput />
       </div>
     </div>
