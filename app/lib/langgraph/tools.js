@@ -2,6 +2,8 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getChatContext } from "@/app/lib/rag/getChatContext";
 import { searchTool } from "../tools/searchInternet";
+import { PdfSchema } from "../pdf/pdf-schema";
+
 export function createDocumentSearchTool(supabase, sessionId) {
   return tool(
     async ({ query }) => {
@@ -56,7 +58,30 @@ export function createDocumentSearchTool(supabase, sessionId) {
   );
 }
 
+export const createPdfTool = tool(
+  async (input) => {
+    console.log("Ai input for the pdf",input)
+    const res = await fetch('api/pdf/generate',{
+      method:'POST',
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(input)
+    })
+    const metadata = await res.json()
+    console.log("response from generated route",metadata)
+    return {
+      status: "success",
+      pdfData: input
+    };
+  },
+  {
+    name: "create_pdf",
+    description: "Use this tool when the user asks to extract summaries, custom notes, study sheets or generate downloadable PDFs.",
+    schema: PdfSchema
+  }
+);
 
 export function createAgentTools(supabase, sessionId) {
-  return [createDocumentSearchTool(supabase, sessionId),searchTool];
+  return [createDocumentSearchTool(supabase, sessionId),searchTool,createPdfTool];
 }

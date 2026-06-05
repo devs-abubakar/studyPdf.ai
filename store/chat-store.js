@@ -4,6 +4,27 @@ export const useChatStore = create((set, get) => ({
   chats: [],
   activeChat: null,
   
+
+  updateLastMessagePayload: (payload) => set((state) => {
+  const chats = [...state.chats];
+  const chatIndex = chats.findIndex(c => c.sessionId === state.activeChat);
+  if (chatIndex === -1) return {};
+
+  const messages = [...chats[chatIndex].messages];
+  if (messages.length === 0) return {};
+
+  // Merge tool data values into the active assistant message bubble
+  messages[messages.length - 1] = {
+    ...messages[messages.length - 1],
+    ...payload
+  };
+
+  chats[chatIndex].messages = messages;
+  return { chats };
+}),
+
+
+
   setChats: (chats) => set({ chats }),
   setActiveChat: (chatId) => set({ activeChat: chatId }),
   
