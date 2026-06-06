@@ -102,19 +102,18 @@ console.log(md.render("```javascript\nconst x = 1\n```"))
               const isUser = msg.role === "user";
               return (
                 <div key={id} className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
-                  <div className={`min-w-0 max-w-[80%] rounded-2xl px-4 py-3 ${
+                  <div className={`min-w-0 rounded-2xl px-4 py-3 ${
                     isUser
-                      ? "bg-brand-purple text-white rounded-br-md"
-                      : "bg-muted text-foreground rounded-bl-md"
+                      ? "bg-brand-purple max-w-[80%] text-white rounded-br-md"
+                      : "bg-transparent max-w-full text-foreground rounded-bl-md"
                   }`}>
 
                     {isUser ? (
-                      // ✅ plain text — no markdown needed for user messages
                       <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">
                         {msg.content}
                       </p>
                     ) : (
-                      // ✅ AI messages — full markdown + syntax highlighting
+
                       <div
                         className="text-sm leading-relaxed ai-message-content"
                         dangerouslySetInnerHTML={{

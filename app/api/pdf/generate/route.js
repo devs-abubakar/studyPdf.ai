@@ -21,8 +21,7 @@ export async function POST(req) {
     const buffer = await renderToBuffer(
       React.createElement(PdfTemplate, { data: fileData })
     )
-
-
+    
     const { data, error } = await supabase.storage
       .from('studyPdfFiles')
       .upload(`generated_${Date.now()}_${fileData.filename}`, buffer, {

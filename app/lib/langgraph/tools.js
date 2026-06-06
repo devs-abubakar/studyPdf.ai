@@ -77,7 +77,7 @@ export const createPdfTool = tool(
   },
   {
     name: "create_pdf",
-    description: "Use this tool when the user asks to extract summaries, custom notes, study sheets or generate downloadable PDFs.",
+    description: "Strictly limit it's use because it is costly. Use this tool when you don't have any other option and the user asks to create downloadable PDFs only.",
     schema: PdfSchema
   }
 );

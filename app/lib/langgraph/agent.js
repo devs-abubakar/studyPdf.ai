@@ -4,24 +4,37 @@ import { GraphState } from "./state";
 import {StateGraph,START} from "@langchain/langgraph"
 import { createAgentNode, createToolsNode, shouldContinue } from "./nodes";
 import { AIMessageChunk } from "@langchain/core/messages";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 
-const LLM_CONFIG = {
+const PRIMARY_CONFIG = {
   model: "llama-3.3-70b-versatile",
   temperature: 0.7,
   maxRetries: 2,
 };
+const FALLBACK_CONFIG = {
+  model: "gemini-2.5-flash",
+  temperature: 0.3,
+  maxRetries: 1,
+};
 
 export async function createDocumentAgent(supabase,sessionId){
-  const llm =new ChatGroq({
+  const primaryLLM =new ChatGroq({
     maxTokens:4096,
     apiKey:process.env.GROQ_API_KEY,
-    ...LLM_CONFIG
+    ...PRIMARY_CONFIG
+  })
+
+  const fallbackLLM = new ChatGoogleGenerativeAI({
+    apiKey:process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    ...FALLBACK_CONFIG
   })
 
   const tools = createAgentTools(supabase,sessionId)
-  const llmwithtools = llm.bindTools(tools)
-  const agentNode = createAgentNode(llmwithtools)
+  const primaryWithTools = primaryLLM.bindTools(tools);
+  const fallbackWithTools = fallbackLLM.bindTools(tools);
+
+  const agentNode = createAgentNode(primaryWithTools,fallbackWithTools)
   const toolsNode = createToolsNode(tools)
 
   const workFlow = new StateGraph({channels:GraphState})
@@ -50,7 +63,7 @@ export async function* streamAgentResponse(agent, messages, sessionId) {
     if (!message) continue
 
     const isAIChunk = message instanceof AIMessageChunk
-    if (!isAIChunk) continue  // skip HumanMessage, ToolMessage, etc.
+    if (!isAIChunk) continue  
 
     const hasText = typeof message.content === "string" && message.content.length > 0
     const hasToolCall = (message.tool_calls?.length ?? 0) > 0 || (message.tool_call_chunks?.length ?? 0) > 0
@@ -64,7 +77,7 @@ export async function* streamAgentResponse(agent, messages, sessionId) {
     }
 
     if (!hasToolCall && toolStarted) {
-      // LLM is generating text again after tool — tool is done
+
       toolStarted = false
       yield { type: "tool_end" }
     }
@@ -75,6 +88,6 @@ export async function* streamAgentResponse(agent, messages, sessionId) {
     }
   }
 
-  // yield done exactly once, after the loop
+
   yield { type: "done", fullText }
 }
