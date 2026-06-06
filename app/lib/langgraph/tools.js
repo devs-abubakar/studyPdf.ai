@@ -61,7 +61,7 @@ export function createDocumentSearchTool(supabase, sessionId) {
 export const createPdfTool = tool(
   async (input) => {
     console.log("Ai input for the pdf",input)
-    const res = await fetch('api/pdf/generate',{
+    const res = await fetch("api/pdf/generate",{
       method:'POST',
       headers:{
         "Content-Type":"application/json"
@@ -70,10 +70,10 @@ export const createPdfTool = tool(
     })
     const metadata = await res.json()
     console.log("response from generated route",metadata)
-    return {
+    return JSON.stringify({
       status: "success",
       pdfData: input
-    };
+    });
   },
   {
     name: "create_pdf",

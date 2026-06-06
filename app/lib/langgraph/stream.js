@@ -12,6 +12,12 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
             try{
                 for await(const event of streamAgentResponse(agent,messages,sessionId)){
                     console.log("event in the controller ===",event)
+
+                    if (event.type === "status"){
+                        controller.enqueue(
+                            encoder.encode(`data: ${JSON.stringify({type:"status",content:event.message})}\n\n`)
+                        )
+                    }
                     if (event.type === "token"){
                         fullResponse+=event.content
                         controller.enqueue(
@@ -30,30 +36,35 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
                     }
                     if (event.type === "end" || event.type === "done"){
                         controller.enqueue(
-                            encoder.encode(`data:[Done] }\n\n`)
+                            encoder.encode(`data:[Done] \n\n`)
                         )
                     controller.close()
+                    return
                     }
                 }
             }catch(e){
                 console.error("[Stream] error",e)
+                controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({type:"error",message:"Streaming lifecycle failure"})}`)
+                )
                 controller.close()
             }
+        },
+    })
     const serviceSupabase = createServiceClient()
-    after(
+    after(()=>{
+        if(!fullResponse.trim()) return
         UploadChatMessageDetails({
         sessionId,
         message: fullResponse,
         role: "assistant",
         supabase: serviceSupabase,
-        }).catch(err => console.error("❌ assistant message save failed:", err))
-    )
-    },
-})
+        }).catch(err => console.error(" assistant message save failed:", err))
+        })
     return new Response(stream,{
         headers:{
         "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
+        "Cache-Control": "no-cache no-transform",
         Connection: "keep-alive",
         ...responseHeaders,
         }

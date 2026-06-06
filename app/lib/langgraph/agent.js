@@ -7,27 +7,27 @@ import { AIMessageChunk } from "@langchain/core/messages";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 
-const PRIMARY_CONFIG = {
-  model: "llama-3.3-70b-versatile",
-  temperature: 0.7,
-  maxRetries: 2,
-};
 const FALLBACK_CONFIG = {
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
+  model: 'meta-llama/llama-3-8b-instruct:free',
+};
+const PRIMARY_CONFIG = {
   model: "gemini-2.5-flash",
   temperature: 0.3,
   maxRetries: 1,
 };
 
 export async function createDocumentAgent(supabase,sessionId){
-  const primaryLLM =new ChatGroq({
+  const fallbackLLM =new ChatGroq({
     maxTokens:4096,
     apiKey:process.env.GROQ_API_KEY,
-    ...PRIMARY_CONFIG
+    ...FALLBACK_CONFIG
   })
 
-  const fallbackLLM = new ChatGoogleGenerativeAI({
+  const primaryLLM = new ChatGoogleGenerativeAI({
     apiKey:process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-    ...FALLBACK_CONFIG
+    ...PRIMARY_CONFIG
   })
 
   const tools = createAgentTools(supabase,sessionId)
@@ -37,7 +37,7 @@ export async function createDocumentAgent(supabase,sessionId){
   const agentNode = createAgentNode(primaryWithTools,fallbackWithTools)
   const toolsNode = createToolsNode(tools)
 
-  const workFlow = new StateGraph({channels:GraphState})
+  const workFlow = new StateGraph(GraphState)
   .addNode("agent",agentNode)
   .addNode("tools",toolsNode)
   .addEdge(START,"agent")
@@ -46,48 +46,64 @@ export async function createDocumentAgent(supabase,sessionId){
   return workFlow.compile()
 }
 export async function* streamAgentResponse(agent, messages, sessionId) {
-  console.log("messages in streamAgentRespons",messages)
   const stream = await agent.stream(
     { messages },
     {
-      configurable: { thread_id: sessionId },
-      streamMode: "messages",
+      streamMode: ["messages", "updates"],
     }
   );
-  
-  let fullText = ""
-  let toolStarted=false
 
-  for await (const [message, metadata] of stream) {
-    // guard — skip undefined/null chunks
-    if (!message) continue
+  let activeToolName = null;
 
-    const isAIChunk = message instanceof AIMessageChunk
-    if (!isAIChunk) continue  
+  for await (const [mode, data] of stream) {
 
-    const hasText = typeof message.content === "string" && message.content.length > 0
-    const hasToolCall = (message.tool_calls?.length ?? 0) > 0 || (message.tool_call_chunks?.length ?? 0) > 0
+    if (mode === "messages") {
+      const [message, metadata] = data;
+      if (!message) continue;
 
-    if (hasToolCall && !toolStarted) {
-      toolStarted = true
-      const toolName = message.tool_calls?.[0]?.name
-                    ?? message.tool_call_chunks?.[0]?.name
-                    ?? "searchUserDocuments"
-      yield { type: "tool_start", toolName }
+      const isAIChunk = message instanceof AIMessageChunk;
+      if (!isAIChunk) continue;
+
+      const toolCallName = message.tool_calls?.[0]?.name; 
+        if (toolCallName && !activeToolName) {
+        activeToolName = toolCallName;
+        yield { type: "tool_start", toolName: toolCallName };
+      }
+
+      // Only stream tokens during actual generation (not during tool calls)
+      const hasText =
+        typeof message.content === "string" &&
+        message.content.length > 0;
+
+      if (hasText && !activeToolName) {
+        yield { type: "token", content: message.content };
+      }
     }
 
-    if (!hasToolCall && toolStarted) {
+    // ─── UPDATES mode: node completion events ─────────────────────────
+    else if (mode === "updates") {
+      const nodeName = Object.keys(data)[0];
 
-      toolStarted = false
-      yield { type: "tool_end" }
-    }
+      if (nodeName === "tools") {
+        // Tool just finished — NOW emit tool_end with the real result name
+        const resultName = data.tools?.messages?.[0]?.name ?? activeToolName;
+        yield { type: "tool_end", toolName: resultName };
+        activeToolName = null;   // reset for next tool call
 
-    if (hasText && !hasToolCall) {
-      fullText += message.content
-      yield { type: "token", content: message.content }
+      } else if (nodeName === "agent") {
+        // Only emit agent status if it's not just a tool-calling step
+        const agentMessages = data.agent?.messages ?? [];
+        const lastMsg = agentMessages[agentMessages.length - 1];
+        const isToolCall = lastMsg?.tool_calls?.length > 0;
+
+        if (!isToolCall) {
+          yield { type: "status", message: "Agent finished." };
+        }
+      }
     }
   }
 
-
-  yield { type: "done", fullText }
+  yield { type: "done" };
 }
+
+

@@ -1,5 +1,5 @@
 import { ToolNode } from "@langchain/langgraph/prebuilt";
-import { SystemMessage } from "@langchain/core/messages";
+import { SystemMessage,AIMessage } from "@langchain/core/messages";
 
 const SYSTEM_PROMPT = `You are Sage, an intelligent and patient AI tutor. Your sole purpose is to help students 
 understand concepts deeply — not just get answers. You teach the way the best human tutors 
@@ -150,7 +150,17 @@ HARD RULES — NEVER BREAK THESE
 ✗ Never end a response without either checking understanding or inviting a next step`;
 
 export function createAgentNode(primaryLLM,fallbackLLM){
-    return async function agentNode(state){
+    return async function agentNode(state,config){
+        console.log("[Agent] processing with", state.messages.length, "messages")
+        console.log("[Agent] last 3 messages:", JSON.stringify(
+        state.messages.slice(-3).map(m => ({
+            type: m._getType?.(),
+            content: typeof m.content === 'string' ? m.content.slice(0, 50) : m.content,
+            tool_calls: m.tool_calls,
+            tool_call_id: m.tool_call_id,
+        })),
+        null, 2
+    ))
         console.log("[Agent] processing with",state.messages.length,"messages")
         let messages = [...state.messages]
             const hasSystemPrompt = messages.some(
@@ -163,7 +173,7 @@ export function createAgentNode(primaryLLM,fallbackLLM){
         }
         try{
 
-          response =await primaryLLM.invoke(messages)
+          response =await primaryLLM.invoke(messages,config)
           console.log("[Agent] Response:", {
       hasContent: !!response.content,
       contentLength: response.content?.length || 0,
@@ -175,12 +185,13 @@ export function createAgentNode(primaryLLM,fallbackLLM){
         const isRateLimitedOrNotFound = err.status === 404 || err.status === 429 || err.message?.includes("does not exists") 
         if(isRateLimitedOrNotFound){
           console.log("====Primary llm failed switching to fallback====")
-          response = await fallbackLLM.invoke(messages)
+          response = await fallbackLLM.invoke(messages,config)
           console.log("[Agent] Response:", {
           hasContent: !!response.content,
           contentLength: response.content?.length || 0,
           toolCalls: response.tool_calls?.length || 0
           })
+          return {messages: [new AIMessage("Fallback model error occurred")]}
         }
       return {messages : [response]}
       }
@@ -189,6 +200,7 @@ export function createAgentNode(primaryLLM,fallbackLLM){
 
 export function shouldContinue(state){
     const lastMessage = state.messages[state.messages.length - 1]
+    console.log("messages in the should continue",state.messages)
     const hasToolCalls = lastMessage.tool_calls?.length>0
 
     if(hasToolCalls){

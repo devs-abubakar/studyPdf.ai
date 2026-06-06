@@ -39,11 +39,11 @@ export async function POST(req) {
 after(
   Promise.all([
     UpdateChatSessionDetails({ id: sessionId, userId, title, supabase: serviceSupabase })
-      .then((data) => console.log("✅ title updated:", data))
-      .catch(err => console.error("❌ title update failed:", err)),
+      .then((data) => console.log(" title updated:", data))
+      .catch(err => console.error(" title update failed:", err)),
     UploadChatMessageDetails({ sessionId:sessionId, message: latestMessage.content, role: "user", supabase: serviceSupabase })
-      .then((data) => console.log("✅ user message saved:", data))
-      .catch(err => console.error("❌ user message failed:", err))
+      .then((data) => console.log(" user message saved:", data))
+      .catch(err => console.error(" user message failed:", err))
   ])
 )
   } else {
