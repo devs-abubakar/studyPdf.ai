@@ -97,6 +97,7 @@ export function ChatInput() {
 
             try {
               const parsedJson = JSON.parse(jsonStr)
+              console.log(parsedJson)
 
               // Type 1: Handle Standard Text generation chunks
               if (parsedJson.type === "token") {
