@@ -12,40 +12,38 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
             try{
                 for await(const event of streamAgentResponse(agent,messages,sessionId)){
                     console.log("event in the controller ===",event)
-
-                    if (event.type === "status"){
-                        controller.enqueue(
-                            encoder.encode(`data: ${JSON.stringify({type:"status",content:event.message})}\n\n`)
-                        )
-                    }
                     if (event.type === "token"){
                         fullResponse+=event.content
+                        console.log("EVENT TYPE ",event.type)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"token",content:event.content})}\n\n`)
                         )
                     }
                     if (event.type === "tool_start"){
+                                                console.log("EVENT TYPE ",event.type)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"tool_start",toolName:event.toolName})}\n\n`)
                         )
                     }
                     if (event.type === "tool_end"){
+                                                console.log("EVENT TYPE ",event.type)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"tool_end"})}\n\n`)
                         )
                     }
-                    if (event.type === "end" || event.type === "done"){
+                    if (event.type === "done"){
+                                                console.log("EVENT TYPE ",event.type)
                         controller.enqueue(
-                            encoder.encode(`data:[Done] \n\n`)
+                            encoder.encode(`data: ${JSON.stringify({type:"done"})} \n\n`)
                         )
-                    controller.close()
-                    return
+                        break
                     }
                 }
+                controller.close()
             }catch(e){
                 console.error("[Stream] error",e)
                 controller.enqueue(
-                    encoder.encode(`data: ${JSON.stringify({type:"error",message:"Streaming lifecycle failure"})}`)
+                    encoder.encode(`data: ${JSON.stringify({type:"error",message:"Streaming lifecycle failure"})}\n\n`)
                 )
                 controller.close()
             }

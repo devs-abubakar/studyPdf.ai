@@ -2,20 +2,24 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
 export const searchTool = tool(
-  async ({ query }) => {
+  async function* ({ query }) {
     console.log(`[Tool] Triggering Tavily Search for: "${query}"`);
     
     try {
+      yield {
+        status: "Searching the internet"
+      }
       const response = await fetch("https://api.tavily.com/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          api_key: process.env.TAVILY_API_KEY,
+        body:{api_key: process.env.TAVILY_API_KEY,
           query: query,
-          max_results: 5,
-        }),
+          max_results: 5,}
+        ,
       });
-
+      yield {
+        status : "Formatting data"
+      }
       const data = await response.json();
       return JSON.stringify(data);
     } catch (error) {

@@ -6,17 +6,17 @@ import { PdfSchema } from "../pdf/pdf-schema";
 
 export function createDocumentSearchTool(supabase, sessionId) {
   return tool(
-    async ({ query }) => {
+    async function* ({ query }) {
         
         if (!query || query.trim().length === 0) {
-            return JSON.stringify({
-                found: false,
-                message: "Please provide a specific question about your documents.",
-                chunks: []
-            });
+          yield {
+            status: "Query is empty. No question to search for."
+          }
         }
         console.log(`[Tool] Searching documents for: "${query}"`);
-
+      yield {
+        status:"Searching for docs"
+      }
       const result = await getChatContext({ 
         sessionId, 
         query, 
@@ -25,11 +25,9 @@ export function createDocumentSearchTool(supabase, sessionId) {
       
       // Format response for LLM consumption
       if (!result || result.length === 0) {
-        return JSON.stringify({
-          found: false,
-          message: "No relevant documents found. Please try a different query or upload more documents.",
-          chunks: []
-        });
+        yield{
+          status:"No docs found"
+        }
       }
       
       return JSON.stringify({
@@ -59,8 +57,9 @@ export function createDocumentSearchTool(supabase, sessionId) {
 }
 
 export const createPdfTool = tool(
-  async (input) => {
+  async (input) =>{
     console.log("Ai input for the pdf",input)
+    
     const res = await fetch("api/pdf/generate",{
       method:'POST',
       headers:{
