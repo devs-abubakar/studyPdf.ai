@@ -26,7 +26,7 @@ export async function createDocumentAgent(supabase,sessionId){
   })
 
   const primaryLLM = new ChatGoogleGenerativeAI({
-    apiKey:process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    apiKey:process.env.GOOGLE_API_KEY,
     ...PRIMARY_CONFIG
   })
 

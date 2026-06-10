@@ -1,4 +1,5 @@
 import { embeddings } from "../ai/geminiEmbedding"
+import { rerankChunks } from "./rerank"
 
 export async function getChatContext({sessionId,query,supabase}){
     
@@ -31,6 +32,7 @@ export async function getChatContext({sessionId,query,supabase}){
             return{status:false , message:"vector search failed"}
         }
         console.log("======data of the vector search========",data)
+        const rankedDocs = await rerankChunks(query,data)
         return data
     }catch(err){
         console.error("Failed to read data",err)
