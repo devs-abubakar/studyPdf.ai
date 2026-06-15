@@ -16,7 +16,6 @@ export default async function chatGroq(messages,onFinishCallback) {
     onFinish:onFinishCallback
   });
 
-  // ✅ Use the method that matches your specific installed SDK version
   return result.toTextStreamResponse(); 
 }
 

@@ -2,7 +2,6 @@ import { embeddings } from "../ai/geminiEmbedding"
 import { rerankChunks } from "./rerank"
 
 export async function getChatContext({sessionId,query,supabase}){
-    
     try{
         console.log("get chat context hit ======== ")
         const [embeddedQuery,{data:sessionFiles,error}]=await Promise.all([
@@ -33,10 +32,10 @@ export async function getChatContext({sessionId,query,supabase}){
         }
         console.log("======data of the vector search========",data)
         const rankedDocs = await rerankChunks(query,data)
-        return data
+        console.log("======data of the vector search========",rankedDocs)
+        return rankedDocs
     }catch(err){
         console.error("Failed to read data",err)
         return {status : false , message:"failed to read data "}
     }
-
 } 

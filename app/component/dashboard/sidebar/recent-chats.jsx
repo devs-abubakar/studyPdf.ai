@@ -2,8 +2,6 @@ import { ChatItem } from "./chat-item"
 import {useChatStore} from "@/store/chat-store"
 import { useEffect, useState } from "react"
 import { supabase } from "@/app/lib/supabase/client"
-import { useMessages } from "@/hooks/useMessages"
-import { getChatContext } from "@/app/lib/rag/getChatContext"
 
 
 export function RecentChats({collapsed}) {
