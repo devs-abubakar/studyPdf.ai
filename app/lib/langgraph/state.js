@@ -1,63 +1,86 @@
-import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages"
-import { messagesStateReducer , Annotation } from "@langchain/langgraph"
+import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
+import { messagesStateReducer, Annotation } from "@langchain/langgraph";
 
+export function convertToLangChainMessages(messages) {
+    if (!Array.isArray(messages)) return [];
 
-export function convertToLangChainMessages(messages){
-    console.log("Messages before langchain format",messages)
-    const langChainformattedMessages = messages.map((msg)=>{
-        console.log("messages came to langchain format",msg)
-        if(!msg || !msg.role){ 
-          console.warn("Messages are empty or no role",msg)
-          return null
+    return messages.map((msg) => {
+        if (!msg || !msg.role) { 
+            console.warn("Message is empty or missing role", msg);
+            return null;
         }
-        if(msg.role === "user"){
-            return new HumanMessage(msg.content)
+
+        switch (msg.role) {
+            case "user":
+                return new HumanMessage(msg.content);
+            
+            case "system":
+                return new SystemMessage(msg.content);
+            
+            case "assistant":
+                // CRITICAL FIX: Preserve tool_calls made by the AI
+                return new AIMessage({
+                    content: msg.content,
+                    tool_calls: msg.tool_calls || [], 
+                    invalid_tool_calls: msg.invalid_tool_calls || []
+                });
+            
+            case "tool":
+                // Validation is good, keep it
+                if (!msg.tool_call_id) {
+                    throw new Error(`Missing tool_call_id in tool message: ${JSON.stringify(msg)}`);
+                }
+                return new ToolMessage({
+                    content: msg.content,
+                    tool_call_id: msg.tool_call_id,
+                    name: msg.name || "unknown_tool" // Good practice to include the tool name
+                });
+            
+            default:
+                console.warn("Unknown message role:", msg.role);
+                return null;
         }
-        if(msg.role === "assistant"){
-            return new AIMessage(msg.content)
-        }
-        if(msg.role === "system"){
-            return new SystemMessage(msg.content)
-        }
-        if(msg.role === "tool"){
-          console.log("message role is tool",msg)
-          if(!msg.tool_call_id){
-            throw new Error("missing tool call id",JSON.stringify(msg))
-          }
-          return new ToolMessage({
-            content:msg.content,
-            tool_call_id:msg.tool_call_id
-          })
-        }
-        return null 
-    }).filter(Boolean)
-    console.log("messages after langchain format",langChainformattedMessages)
-    return langChainformattedMessages
+    }).filter(Boolean);
 }
 
 export function convertFromLangChainMessages(messages) {
-  if (!Array.isArray(messages)) return []
+    if (!Array.isArray(messages)) return [];
 
-  return messages.map((msg) => {
-    const type = msg._getType?.()
+    return messages.map((msg) => {
+        const type = msg._getType?.();
+        
+        const roleMap = {
+            human: "user",
+            ai: "assistant",
+            system: "system",
+            tool: "tool",
+        };
     
-    const roleMap = {
-      human: "user",
-      ai: "assistant",
-      system: "system",
-      tool: "tool",
-    }
-  
-    return {
-      role: roleMap[type] ?? "user",
-      content:typeof msg.content === "string"
-    ? msg.content
-    : JSON.stringify(msg.content ?? {})
-    }
-})}
+        // Construct the base object
+        const serializedMsg = {
+            role: roleMap[type] ?? "user",
+            content: msg.content 
+        };
+
+        // CRITICAL FIX: Conditionally attach tool metadata if it exists
+        // This ensures the data survives a round-trip to your database and back
+        if (msg.tool_calls && msg.tool_calls.length > 0) {
+            serializedMsg.tool_calls = msg.tool_calls;
+        }
+        if (msg.tool_call_id) {
+            serializedMsg.tool_call_id = msg.tool_call_id;
+        }
+        if (msg.name) {
+            serializedMsg.name = msg.name;
+        }
+
+        return serializedMsg;
+    });
+}
+
 export const GraphState = Annotation.Root({
-  messages: Annotation({
-    reducer: messagesStateReducer,
-    default: () => [],
-  }),
+    messages: Annotation({
+        reducer: messagesStateReducer,
+        default: () => [],
+    }),
 });
