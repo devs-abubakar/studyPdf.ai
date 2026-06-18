@@ -95,7 +95,7 @@ console.log(md.render("```javascript\nconst x = 1\n```"))
       {!activeChat ? (
         <WelcomeScreen />
       ) : (
-        <div ref={chatRef} onScroll={handleScroll} className="absolute inset-0 flex-1 overflow-y-auto pb-36 px-4">
+        <div ref={chatRef} onScroll={handleScroll} className="absolute  inset-0 flex-1 overflow-y-auto pb-36 px-4">
           <div className="mx-auto max-w-3xl py-4 space-y-4">
 
             {messages.map((msg, id) => {

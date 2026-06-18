@@ -144,142 +144,275 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
+/* ─── Text truncation utility ─────────────────────────────── */
 .truncate-text {
-  white-space: wrap;      
-  overflow: hidden;         
-  text-overflow: ellipsis;  
-  width: 100%;             
+  white-space: nowrap;        /* was "wrap" — invalid, nowrap is the correct value for ellipsis */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
+/* ================================================================
+   ai-message-content.css
+   
+   HOW TO IMPORT — order matters. In your global CSS or layout:
+   
+     @import 'highlight.js/styles/github-dark.css';   ← first
+     @import './ai-message-content.css';              ← after, so we win
+   
+   OR in your entry file (main.jsx / layout.tsx):
+   
+     import 'highlight.js/styles/github-dark.css';
+     import '@/styles/ai-message-content.css';        ← after hljs
+   ================================================================ */
+
+
+/* ── Root container ─────────────────────────────────────────────
+   No Tailwind text-sm / leading-relaxed on this element.
+   This block owns all typography for AI messages.
+   ─────────────────────────────────────────────────────────────── */
 .ai-message-content {
+  /* layout */
   overflow: hidden;
   word-break: break-word;
   overflow-wrap: break-word;
   min-width: 0;
+
+  /* typography — these must not be set by Tailwind on this element */
+  font-size: 0.925rem;
+  line-height: 1.75;
+  color: var(--foreground);
 }
 
-/* Code blocks — horizontal scroll, no overflow */
-.ai-message-content pre {
-  overflow-x: auto;
-  max-width: 100%;
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  margin: 0.75rem 0;
-  background-color: #171717;   /* slightly lighter than dark bg */
-  border: 1px solid var(--border);
-}
 
-.ai-message-content pre code {
-  white-space: pre;
-  word-break: normal;
-  overflow-wrap: normal;
-  font-size: 1rem;
-  line-height: 1.65;
-  background: transparent;
-  padding: 0;
-  color: oklch(0.88 0.01 67.8);
-}
-
-/* Inline code */
-.ai-message-content code:not(pre code) {
-  background-color: oklch(0.922 0.005 34.3 / 40%);  
-  color: var(--color-brand-purple);
-  padding: 0.15rem 0.4rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  word-break: break-all;
-}
-
-/* Paragraph spacing — remove default margins crowding */
+/* ── Paragraphs ─────────────────────────────────────────────────*/
 .ai-message-content p {
-  margin: 0.4rem 0;
-  line-height: 1.65;
-}
-.ai-message-content p:first-child { margin-top: 0; }
-.ai-message-content p:last-child  { margin-bottom: 0; }
-
-/* Lists */
-.ai-message-content ul,
-.ai-message-content ol {
-  padding-left: 1.4rem;
   margin: 0.5rem 0;
+  line-height: 1.75;
 }
-.ai-message-content li {
-  margin: 0.3rem 0;
-  line-height: 1.6;
-}
-.ai-message-content li::marker {
-  color: var(--color-brand-pink);   
-}
+.ai-message-content > p:first-child,
+.ai-message-content > *:first-child { margin-top: 0; }
+.ai-message-content > p:last-child,
+.ai-message-content > *:last-child  { margin-bottom: 0; }
 
-/* Headings */
+
+/* ── Headings ───────────────────────────────────────────────────*/
 .ai-message-content h1,
 .ai-message-content h2,
 .ai-message-content h3,
 .ai-message-content h4 {
-  font-family: var(--font-display);    
+  font-family: var(--font-display);
   font-weight: 600;
-  margin: 0.9rem 0 0.4rem;
   line-height: 1.3;
+  letter-spacing: -0.015em;
   color: var(--foreground);
+  /* first heading never adds top margin — heading after content does */
+  margin: 1.1rem 0 0.35rem;
 }
-.ai-message-content h1 { font-size: 1.4rem; }
-.ai-message-content h2 { font-size: 1.1rem; }
-.ai-message-content h3 { font-size: 1rem;   }
+.ai-message-content :is(h1,h2,h3,h4):first-child { margin-top: 0; }
+.ai-message-content h1 { font-size: 1.35rem; }
+.ai-message-content h2 { font-size: 1.15rem; }
+.ai-message-content h3 { font-size: 1rem; }
+.ai-message-content h4 { font-size: 0.925rem; font-weight: 700; letter-spacing: 0; }
 
-/* Strong / Bold */
+
+/* ── Inline formatting ──────────────────────────────────────────*/
 .ai-message-content strong {
-  font-weight: 800;
+  font-weight: 700;
   color: var(--foreground);
 }
+.ai-message-content em {
+  font-style: italic;
+  color: var(--muted-foreground);
+}
 
-/* Blockquotes */
+
+/* ── Code block wrapper (pre) ───────────────────────────────────
+   We do NOT touch background/color here — highlight.js owns that.
+   We only set layout, spacing, and border.
+   ─────────────────────────────────────────────────────────────── */
+.ai-message-content pre {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: var(--radius-md, 8px);
+  margin: 0.75rem 0;
+  border: 1px solid var(--border);
+  /* no padding here — the code-block-header + hljs handles it */
+  padding: 0;
+  position: relative;
+}
+
+/* hljs sets its own padding on pre.hljs — override it so our
+   header lines up flush, and code body gets clean inset */
+.ai-message-content pre.hljs,
+.ai-message-content pre > code.hljs {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+/* actual code inside pre */
+.ai-message-content pre code {
+  display: block;
+  padding: 0.85rem 1rem;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  tab-size: 2;
+  /* inherit color from hljs theme — don't override */
+}
+
+
+/* ── Code block header (injected by your useEffect) ────────────*/
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+.code-lang {
+  font-size: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--muted-foreground);
+  text-transform: lowercase;
+}
+.copy-btn {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.copy-btn:hover  { background: var(--border); color: var(--foreground); }
+.copy-btn.copied { color: #4ade80; border-color: #4ade80; }
+
+
+/* ── Inline code ────────────────────────────────────────────────
+   Use !important only here to beat hljs which also targets code
+   ─────────────────────────────────────────────────────────────── */
+.ai-message-content code:not(pre code) {
+  background-color: oklch(0.922 0.005 34.3 / 35%) !important;
+  color: var(--color-brand-purple) !important;
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.875em;   /* em = relative to parent, scales with surrounding text */
+  word-break: break-all;
+}
+
+
+/* ── Lists ──────────────────────────────────────────────────────*/
+.ai-message-content ul,
+.ai-message-content ol {
+  padding-left: 1.5rem;
+  margin: 0.4rem 0;
+}
+.ai-message-content li {
+  margin: 0.25rem 0;
+  line-height: 1.65;
+}
+.ai-message-content li::marker {
+  color: var(--color-brand-pink);
+}
+.ai-message-content li > ul,
+.ai-message-content li > ol {
+  margin: 0.15rem 0;
+}
+
+
+/* ── Blockquote ─────────────────────────────────────────────────*/
 .ai-message-content blockquote {
   border-left: 3px solid var(--color-brand-pink);
-  padding-left: 0.85rem;
-  margin: 0.6rem 0;
+  border-radius: 0;             /* never round a single-side border */
+  padding: 0.35rem 0 0.35rem 0.9rem;
+  margin: 0.75rem 0;
   color: var(--muted-foreground);
   font-style: italic;
 }
+.ai-message-content blockquote p { margin: 0; }
 
-/* Horizontal rule */
-.ai-message-content hr {
-  border: none;
-  border-top: 1px solid var(--border);
+
+/* ── Tables ─────────────────────────────────────────────────────*/
+.ai-message-content table {
+  display: block;               /* enables horizontal scroll */
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin: 0.75rem 0;
+}
+.ai-message-content th,
+.ai-message-content td {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  line-height: 1.5;
+  white-space: nowrap;          /* prevents cell wrapping on narrow screens */
+}
+.ai-message-content th {
+  font-weight: 600;
+  background-color: oklch(0.922 0.005 34.3 / 15%);
+  color: var(--foreground);
+}
+.ai-message-content tr:nth-child(even) td {
+  background-color: oklch(0.922 0.005 34.3 / 6%);
+}
+
+
+/* ── Images ─────────────────────────────────────────────────────*/
+.ai-message-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md, 8px);
+  display: block;
   margin: 0.75rem 0;
 }
 
-/* Links */
+
+/* ── Horizontal rule ────────────────────────────────────────────*/
+.ai-message-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.85rem 0;
+}
+
+
+/* ── Links ──────────────────────────────────────────────────────*/
 .ai-message-content a {
   color: var(--color-brand-pink);
   text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 0.15s ease;
 }
-.ai-message-content a:hover {
-  color: var(--color-brand-pink-dark);
-}
+.ai-message-content a:hover { color: var(--color-brand-pink-dark); }
 
-/* Dark mode adjustments */
-.dark .ai-message-content pre {
-  background-color: #171717;
-  border-color: var(--border);
-}
 
-.dark .ai-message-content code:not(pre code) {
-  background-color: #171717;
-  color: var(--color-brand-pink);
-}
-.ai-message-content pre::-webkit-scrollbar,
-.ai-message-content pre code::-webkit-scrollbar {
-  height: 4px;
-}
-
-.ai-message-content pre::-webkit-scrollbar-track,
-.ai-message-content pre code::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.ai-message-content pre::-webkit-scrollbar-thumb,
-.ai-message-content pre code::-webkit-scrollbar-thumb {
-  background: oklch(1 0 0 / 20%);
+/* ── Scrollbar ──────────────────────────────────────────────────*/
+.ai-message-content pre::-webkit-scrollbar       { height: 5px; }
+.ai-message-content pre::-webkit-scrollbar-track { background: transparent; }
+.ai-message-content pre::-webkit-scrollbar-thumb {
+  background: oklch(1 0 0 / 35%);
   border-radius: 999px;
+}
+.ai-message-content pre::-webkit-scrollbar-thumb:hover {
+  background: oklch(1 0 0 / 55%);
+}
+
+
+/* ── Dark mode ──────────────────────────────────────────────────*/
+.dark .ai-message-content code:not(pre code) {
+  background-color: oklch(0.18 0.005 34.3 / 70%) !important;
+  color: var(--color-brand-pink) !important;
+}
+.dark .ai-message-content th {
+  background-color: oklch(0.18 0.005 34.3 / 35%);
+}
+.dark .ai-message-content tr:nth-child(even) td {
+  background-color: oklch(0.18 0.005 34.3 / 18%);
 }
