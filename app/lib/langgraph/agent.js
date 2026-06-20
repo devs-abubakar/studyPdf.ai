@@ -8,9 +8,9 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 
 const FALLBACK_CONFIG = {
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: 'https://openrouter.ai/api/v1',
-  model: 'meta-llama/llama-3-8b-instruct:free',
+  model: 'gemini-2.5-flash',
+  temperature: 0.3,
+  maxRetries: 1,
 };
 const PRIMARY_CONFIG = {
   model: "gemini-2.5-flash",
@@ -19,9 +19,8 @@ const PRIMARY_CONFIG = {
 };
 
 export async function createDocumentAgent(supabase,sessionId){
-  const fallbackLLM =new ChatGroq({
-    maxTokens:4096,
-    apiKey:process.env.GROQ_API_KEY,
+  const fallbackLLM =new ChatGoogleGenerativeAI({
+    apiKey:process.env.GROQ_API_KEY_2,
     ...FALLBACK_CONFIG
   })
 

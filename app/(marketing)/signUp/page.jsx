@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import signUpNewUser from "@/actions/auth/signUp-action";
+import Link from "next/link"
 
 export default function SignUpPage() {
   const [message, setMessage] = useState("");
@@ -84,6 +85,15 @@ export default function SignUpPage() {
           </button>
 
         </form>
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Already have an account? 
+          <Link
+            href="/signIn"
+            className="font-medium text-[#831C91] hover:text-[#FF70BF] transition"
+          >
+            Sign In
+          </Link>
+        </p>
 
         {/* Message */}
         {message && (

@@ -4,14 +4,14 @@ import { after } from "next/server"
 import { UploadChatMessageDetails } from "../services/chat-message-service"
 
 export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
-    console.log("messages in  the build agent stream is ====>",messages)
+    console.log("sessionId in  the build agent stream is ====>",sessionId)
     const encoder = new TextEncoder()
     let fullResponse = ""
     const stream = new ReadableStream({
         async start(controller){
             try{
                 for await(const event of streamAgentResponse(agent,messages,sessionId)){
-                    console.log("event in the controller ===",event)
+                    console.log("event in the controller for sessionId ===",sessionId)
                     if (event.type === "token"){
                         fullResponse+=event.content
                         console.log("EVENT TYPE ",event.type)
@@ -20,19 +20,19 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
                         )
                     }
                     if (event.type === "tool_start"){
-                                                console.log("EVENT TYPE ",event.type)
+                                                console.log("EVENT TYPE and Session id ",event.type,sessionId)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"tool_start",toolName:event.toolName})}\n\n`)
                         )
                     }
                     if (event.type === "tool_end"){
-                                                console.log("EVENT TYPE ",event.type)
+                                                console.log("EVENT TYPE and Session id ",event.type,sessionId)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"tool_end"})}\n\n`)
                         )
                     }
                     if (event.type === "done"){
-                                                console.log("EVENT TYPE ",event.type)
+                                                console.log("EVENT TYPE and Session id ",event.type,sessionId)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"done"})} \n\n`)
                         )

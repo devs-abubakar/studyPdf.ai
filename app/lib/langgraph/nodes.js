@@ -217,7 +217,7 @@ export function createAgentNode(primaryLLM,fallbackLLM){
 
 export function shouldContinue(state){
     const lastMessage = state.messages[state.messages.length - 1]
-    console.log("messages in the should continue",state.messages)
+    console.log("should continue hit")
     const hasToolCalls = lastMessage.tool_calls?.length>0
 
     if(hasToolCalls){

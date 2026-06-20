@@ -20,7 +20,7 @@ export async function POST(req) {
   if (!user) return NextResponse.json({ status: 401, message: "unauthorized user" })
 
   const { messages, sessionId } = await req.json()
-  console.log("messages in the route ===>",messages)
+  console.log("messages in the route and the session id  ===>",messages,sessionId)
   const userId = user.id
   const latestMessage = messages[messages.length - 1]
   const isNew = messages.length === 1
@@ -28,10 +28,12 @@ export async function POST(req) {
   let persisted = false
   if (isNew) {
     // INSERT + title gen in parallel — both awaited before stream starts
+    console.time('saving session details and title gen completed')
     const [sessionDetails,generatedTitle] = await Promise.all([
       UploadChatSessionDetails({ id: sessionId,userId:userId,title :title,supabase: supabase,persisted:true }),
       TitleGenerator(latestMessage.content)
     ])
+    console.timeEnd('saving session details and title gen completed')
     title = generatedTitle
     const serviceSupabase = createServiceClient()
     persisted = sessionDetails.message
@@ -55,7 +57,9 @@ after(
   }
 
     console.log("[Chat] Creating document agent...");
+    console.time("creating agent ended")
     const agent = await createDocumentAgent(supabase, sessionId);
+    console.timeEnd("creating agent ended")
     const langChainMessages = convertToLangChainMessages(messages);
     
     return buildAgentStream({agent,sessionId,messages:langChainMessages,responseHeaders: isNew ? {
