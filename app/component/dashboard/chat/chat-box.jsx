@@ -37,6 +37,7 @@ export function ChatBox() {
   const bottomRef = useRef(null);
   const { loading, error } = useMessages(activeChat);
   const agentAction = useChatStore((state)=>state.agentAction)
+  const actionProgress = useChatStore((state)=>state.actionProgress)
 
   // temporarily add this just to see output
 console.log(md.render("```javascript\nconst x = 1\n```"))
@@ -114,7 +115,13 @@ console.log(md.render("```javascript\nconst x = 1\n```"))
                       </p>
                     ) : (
                       <>
-                      {agentAction?`Agent Action : ${agentAction}`:""}
+                      {agentAction ? <p className='font-semibold'>
+                        {agentAction}
+                        <p className='text-muted'>
+                          {actionProgress}
+                        </p>
+                      </p> : ""
+                      }
                       <div
                         className="text-sm leading-relaxed ai-message-content"
                         dangerouslySetInnerHTML={{

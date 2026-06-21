@@ -72,6 +72,7 @@ export async function* streamAgentResponse(agent, messages, sessionId) {
       }
     }
     if (mode === "tools") {
+      console.log("Data of the tool is :",data)
       if (data.event === "on_tool_start") {
         yield{
           type:"tool_start",

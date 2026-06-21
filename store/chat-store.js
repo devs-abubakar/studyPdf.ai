@@ -4,8 +4,14 @@ export const useChatStore = create((set, get) => ({
   chats: [],
   activeChat: null,
   
+  // Agent BTS
   agentAction: null,
   setAgentAction:(action)=>set({agentAction:action}),
+
+  actionProgress: null,
+  setActionProgress: (progress)=>set({actionProgress:progress}),
+
+
 
   updateLastMessagePayload: (payload) => set((state) => {
   const chats = [...state.chats];

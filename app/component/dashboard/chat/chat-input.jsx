@@ -27,6 +27,8 @@ export function ChatInput() {
   const updateChatPersisted = useChatStore((state) => state.updateChatPersisted)
   const setAgentAction = useChatStore((state)=>state.setAgentAction)
   const agentAction = useChatStore((state)=>state.agentAction)
+  const setActionProgress = useChatStore((state)=>state.setActionProgress)
+  const actionProgress = useChatStore((state)=>state.actionProgress)
   const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
 
@@ -56,6 +58,7 @@ export function ChatInput() {
 
   // Handle SSE Chunk Stream Processing
   async function getResponse(currentMessages, sessionId) {
+    setAgentAction("Thinking...")
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -95,7 +98,12 @@ export function ChatInput() {
             
             const jsonStr = trimmedLine.replace("data:", "").trim()
             if (jsonStr.toLocaleLowerCase().includes("[done]")) continue
+            
+            // Debugging
             console.log(agentAction)
+            console.log(actionProgress)
+            
+            
             try {
               const parsedJson = JSON.parse(jsonStr)
               console.log(parsedJson)
@@ -103,16 +111,26 @@ export function ChatInput() {
               if(parsedJson.type === "tool_start"){
                 setAgentAction(parsedJson?.toolName)
               }
+
+              // Type : handling tool_progress
+              if(parsedJson.type === "tool_progress"){
+                setActionProgress(parsedJson?.progress_status)
+              }
+
               // Type : Handle tool_end 
               if(parsedJson.type === "tool_end"){
-                setAgentAction(null)
+                setAgentAction("Tool Ended")
               }
               // Type : Handle Standard Text generation chunks
               if (parsedJson.type === "token") {
+                setAgentAction(null)
+                setActionProgress(null)
                 appendToLastMessage(parsedJson.content)
               }
               if (parsedJson.type === "error"){
                 appendToLastMessage("Something went wrong")
+                setAgentAction(null)
+                setActionProgress(null)
               }
 
               // Type : Handle PDF compilation tool completions(still working on the pdf part) 
@@ -123,12 +141,16 @@ export function ChatInput() {
                 })
               }
             } catch (e) {
+              setAgentAction(null)
+              setActionProgress(null)
               console.error("Invalid SSE line stream chunk parse error:", line,e)
             }
           }
         }
       }
     } catch (err) {
+      setAgentAction(null)
+      setActionProgress(null)
       console.error("Critical stream handler failure:", err)
     }
   }

@@ -11,7 +11,8 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
         async start(controller){
             try{
                 for await(const event of streamAgentResponse(agent,messages,sessionId)){
-                    console.log("event in the controller for sessionId ===",sessionId)
+                    console.log("event in the controller ===",event)
+                    console.log("sessionId in the controller ===",sessionId)
                     if (event.type === "token"){
                         fullResponse+=event.content
                         console.log("EVENT TYPE ",event.type)
@@ -23,6 +24,11 @@ export function buildAgentStream({agent,messages,sessionId,responseHeaders={}}){
                                                 console.log("EVENT TYPE and Session id ",event.type,sessionId)
                         controller.enqueue(
                             encoder.encode(`data: ${JSON.stringify({type:"tool_start",toolName:event.toolName})}\n\n`)
+                        )
+                    }
+                    if (event.type === "tool_progress"){
+                        controller.enqueue(
+                            encoder.encode(`data: ${JSON.stringify({type:"tool_progress",progress_status:event.progress.status })}`)
                         )
                     }
                     if (event.type === "tool_end"){
