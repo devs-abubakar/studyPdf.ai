@@ -25,7 +25,8 @@ export function ChatInput() {
   const chats = useChatStore((state) => state.chats)
   const updateChatTitle = useChatStore((state) => state.updateChatTitle)
   const updateChatPersisted = useChatStore((state) => state.updateChatPersisted)
-
+  const setAgentAction = useChatStore((state)=>state.setAgentAction)
+  const agentAction = useChatStore((state)=>state.agentAction)
   const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
 
@@ -94,17 +95,27 @@ export function ChatInput() {
             
             const jsonStr = trimmedLine.replace("data:", "").trim()
             if (jsonStr.toLocaleLowerCase().includes("[done]")) continue
-
+            console.log(agentAction)
             try {
               const parsedJson = JSON.parse(jsonStr)
               console.log(parsedJson)
-
-              // Type 1: Handle Standard Text generation chunks
+              // Type : Handle tool_start 
+              if(parsedJson.type === "tool_start"){
+                setAgentAction(parsedJson?.toolName)
+              }
+              // Type : Handle tool_end 
+              if(parsedJson.type === "tool_end"){
+                setAgentAction(null)
+              }
+              // Type : Handle Standard Text generation chunks
               if (parsedJson.type === "token") {
                 appendToLastMessage(parsedJson.content)
               }
+              if (parsedJson.type === "error"){
+                appendToLastMessage("Something went wrong")
+              }
 
-              // Type 2: Handle PDF compilation tool completions 
+              // Type : Handle PDF compilation tool completions(still working on the pdf part) 
               if (parsedJson.type === "tool_result" && parsedJson.name === "createPdf") {
                 // Attach the payload metadata straight to the message block in Zustand
                 updateLastMessagePayload({
@@ -112,7 +123,7 @@ export function ChatInput() {
                 })
               }
             } catch (e) {
-              console.error("Invalid SSE line stream chunk parse error:", line)
+              console.error("Invalid SSE line stream chunk parse error:", line,e)
             }
           }
         }

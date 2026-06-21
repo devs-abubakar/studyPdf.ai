@@ -8,7 +8,6 @@ import 'highlight.js/styles/github-dark.css';
 import { useMessages } from '@/hooks/useMessages';
 import ScrollToBottom from './scroll-to-bottom';
 
-
 const md = new markdownit({ 
   html: false,      // XSS safe
   breaks: true, 
@@ -37,6 +36,7 @@ export function ChatBox() {
   const chatRef = useRef(null);
   const bottomRef = useRef(null);
   const { loading, error } = useMessages(activeChat);
+  const agentAction = useChatStore((state)=>state.agentAction)
 
   // temporarily add this just to see output
 console.log(md.render("```javascript\nconst x = 1\n```"))
@@ -113,13 +113,15 @@ console.log(md.render("```javascript\nconst x = 1\n```"))
                         {msg.content}
                       </p>
                     ) : (
-
+                      <>
+                      {agentAction?`Agent Action : ${agentAction}`:""}
                       <div
                         className="text-sm leading-relaxed ai-message-content"
                         dangerouslySetInnerHTML={{
                           __html: md.render(msg.content ?? ""),
                         }}
-                      />
+                        />
+                        </>
                     )}
 
                   </div>

@@ -10,14 +10,22 @@ const SignInPage = () => {
   const router = useRouter();
 
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState("idle");
   const signInWithGoogle = async() =>{
+    setLoading("google")
+    try{
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options:{
         redirectTo:"http://localhost:3000/auth/callback"
       }
     })
+    setLoading("idle")
+    }catch(e){
+      console.error(e)
+      setMessage("Failed to sign in with Google")
+      setLoading("idle")
+    }
   }
 
   useEffect(() => {
@@ -36,13 +44,13 @@ const SignInPage = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
+    setLoading("email");
 
     const formData = new FormData(e.currentTarget);
     const res = await logInUser(formData);
 
     setMessage(res.message);
-    setLoading(false);
+    setLoading("idle");
 
     if (res.success) {
       router.push("/dashboard");
@@ -98,7 +106,7 @@ const SignInPage = () => {
             disabled={loading}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-[#FF70BF] to-[#831C91] text-white font-semibold hover:opacity-90 active:scale-[0.98] transition disabled:opacity-70"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading=== "email" ? "Signing in..." : "Sign in"}
           </button>
         </form>
 
