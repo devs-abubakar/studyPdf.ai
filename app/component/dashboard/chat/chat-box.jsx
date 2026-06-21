@@ -36,11 +36,13 @@ export function ChatBox() {
   const chatRef = useRef(null);
   const bottomRef = useRef(null);
   const { loading, error } = useMessages(activeChat);
-  const agentAction = useChatStore((state)=>state.agentAction)
-  const actionProgress = useChatStore((state)=>state.actionProgress)
+  const lastMessage = messages[messages.length - 1]
+  const agentAction = useChatStore((state)=>state.agentStates.agentAction)
+  const actionProgress = useChatStore((state)=>state.agentStates.actionProgress)
 
-  // temporarily add this just to see output
-console.log(md.render("```javascript\nconst x = 1\n```"))
+  const lastAssistantIndex = [...messages]
+  .map(m => m.role)
+  .lastIndexOf("assistant");
 
   const handleScroll = () => {
     const el = chatRef.current;
@@ -100,6 +102,7 @@ console.log(md.render("```javascript\nconst x = 1\n```"))
           <div className="mx-auto max-w-3xl py-4 space-y-4">
 
             {messages.map((msg, id) => {
+              const isLastAssistant = id == lastAssistantIndex
               const isUser = msg.role === "user";
               return (
                 <div key={id} className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
@@ -115,13 +118,12 @@ console.log(md.render("```javascript\nconst x = 1\n```"))
                       </p>
                     ) : (
                       <>
-                      {agentAction ? <p className='font-semibold'>
-                        {agentAction}
-                        <p className='text-muted'>
-                          {actionProgress}
-                        </p>
-                      </p> : ""
-                      }
+                        { isLastAssistant && !!(agentAction || actionProgress) && (
+                          <div>
+                            <div className="font-semibold">{agentAction}</div>
+                            <div className="text-muted">{actionProgress}</div>
+                          </div>
+                        )}
                       <div
                         className="text-sm leading-relaxed ai-message-content"
                         dangerouslySetInnerHTML={{

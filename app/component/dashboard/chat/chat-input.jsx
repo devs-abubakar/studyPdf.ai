@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useChatStore } from '@/store/chat-store'
 import { UploadDropdown } from './input/option-drawer'
 import FilePill from './input/file-pill'
+import toLLMMessages from '@/app/lib/chat/serializer'
 
 export function ChatInput() {
   const [query, setQuery] = useState("")
@@ -26,11 +27,13 @@ export function ChatInput() {
   const updateChatTitle = useChatStore((state) => state.updateChatTitle)
   const updateChatPersisted = useChatStore((state) => state.updateChatPersisted)
   const setAgentAction = useChatStore((state)=>state.setAgentAction)
-  const agentAction = useChatStore((state)=>state.agentAction)
   const setActionProgress = useChatStore((state)=>state.setActionProgress)
-  const actionProgress = useChatStore((state)=>state.actionProgress)
   const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
+  const updateLastMessage = useChatStore((state)=>state.updateLastMessage)
+  const actionProgress = useChatStore((state)=>state.agentStates.actionProgress)
+  const agentAction = useChatStore((state)=>state.agentStates.agentAction)
+  const updateAgentStates = useChatStore((state)=>state.updateAgentStates)
 
   // Handle keyboard submit shortcut
   const handleKeyDown = (e) => {
@@ -58,7 +61,7 @@ export function ChatInput() {
 
   // Handle SSE Chunk Stream Processing
   async function getResponse(currentMessages, sessionId) {
-    setAgentAction("Thinking...")
+    updateAgentStates({agentAction:"Thinking..."})
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -99,9 +102,9 @@ export function ChatInput() {
             const jsonStr = trimmedLine.replace("data:", "").trim()
             if (jsonStr.toLocaleLowerCase().includes("[done]")) continue
             
+            console.log("messages",messages)
             // Debugging
-            console.log(agentAction)
-            console.log(actionProgress)
+            console.log("=====progress and action====",agentAction,actionProgress)
             
             
             try {
@@ -109,28 +112,27 @@ export function ChatInput() {
               console.log(parsedJson)
               // Type : Handle tool_start 
               if(parsedJson.type === "tool_start"){
-                setAgentAction(parsedJson?.toolName)
+                updateAgentStates({agentAction:parsedJson.toolName})
               }
-
+              
               // Type : handling tool_progress
               if(parsedJson.type === "tool_progress"){
-                setActionProgress(parsedJson?.progress_status)
+                updateAgentStates({actionProgress:parsedJson?.progress_status})
               }
-
+              
               // Type : Handle tool_end 
               if(parsedJson.type === "tool_end"){
-                setAgentAction("Tool Ended")
+                updateAgentStates({actionProgress:null,agentAction:null})
+                
               }
               // Type : Handle Standard Text generation chunks
               if (parsedJson.type === "token") {
-                setAgentAction(null)
-                setActionProgress(null)
                 appendToLastMessage(parsedJson.content)
               }
               if (parsedJson.type === "error"){
+                updateAgentStates({actionProgress:null,agentAction:null})
                 appendToLastMessage("Something went wrong")
-                setAgentAction(null)
-                setActionProgress(null)
+
               }
 
               // Type : Handle PDF compilation tool completions(still working on the pdf part) 
@@ -141,16 +143,14 @@ export function ChatInput() {
                 })
               }
             } catch (e) {
-              setAgentAction(null)
-              setActionProgress(null)
+              updateAgentStates({agentAction:null,actionProgress:null})
               console.error("Invalid SSE line stream chunk parse error:", line,e)
             }
           }
         }
       }
     } catch (err) {
-      setAgentAction(null)
-      setActionProgress(null)
+      updateAgentStates({agentAction:null,actionProgress:null})
       console.error("Critical stream handler failure:", err)
     }
   }
@@ -208,8 +208,8 @@ export function ChatInput() {
 
     addMessage("user", currentQuery)
     setQuery("")
-
-    const currentMessages = [...(messages || []), userMessage]
+    const cleanedMessages = toLLMMessages(messages)
+    const currentMessages = [...(cleanedMessages || []), userMessage]
     await getResponse(currentMessages, currentSessionId)
   }
 

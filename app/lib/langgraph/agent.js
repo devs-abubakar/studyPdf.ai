@@ -20,7 +20,7 @@ const PRIMARY_CONFIG = {
 
 export async function createDocumentAgent(supabase,sessionId){
   const fallbackLLM =new ChatGoogleGenerativeAI({
-    apiKey:process.env.GROQ_API_KEY_2,
+    apiKey:process.env.GOOGLE_GEMINI_KEY_2,
     ...FALLBACK_CONFIG
   })
 

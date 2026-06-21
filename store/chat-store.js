@@ -4,16 +4,20 @@ export const useChatStore = create((set, get) => ({
   chats: [],
   activeChat: null,
   
-  // Agent BTS
-  agentAction: null,
-  setAgentAction:(action)=>set({agentAction:action}),
+  agentStates : {
+    agentAction : null,
+    actionProgress : null
+  },
 
-  actionProgress: null,
-  setActionProgress: (progress)=>set({actionProgress:progress}),
+  updateAgentStates :(updates)=>
+    set((state)=>({
+      agentStates : {
+        ...state.agentStates,
+        ...updates
+      }
+    })),
 
-
-
-  updateLastMessagePayload: (payload) => set((state) => {
+  updateLastMessage: (payload) => set((state) => {
   const chats = [...state.chats];
   const chatIndex = chats.findIndex(c => c.sessionId === state.activeChat);
   if (chatIndex === -1) return {};
@@ -85,7 +89,7 @@ export const useChatStore = create((set, get) => ({
               ...chat,
               messages: [
                 ...chat.messages,
-                { role, content: String(content ?? "") }
+                { role, content: String(content ?? "")}
               ]
             }
           : chat

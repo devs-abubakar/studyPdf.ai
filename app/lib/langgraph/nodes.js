@@ -208,7 +208,7 @@ export function createAgentNode(primaryLLM,fallbackLLM){
           contentLength: response.content?.length || 0,
           toolCalls: response.tool_calls?.length || 0
           })
-          return {messages: [new AIMessage("Fallback model error occurred")]}
+          return {messages: [response]}
         }
       return {messages : [response]}
       }
