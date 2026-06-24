@@ -12,7 +12,7 @@ export default async function signUpNewUser(formData) {
     email: email,
     password: password,
     options: {
-        emailRedirectTo: `${NEXT_PUBLIC_APP_URL}/auth/callback`
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`
     }
     })
     console.log(data)
