@@ -17,7 +17,7 @@ const SignInPage = () => {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options:{
-        redirectTo:"http://localhost:3000/auth/callback"
+        redirectTo:`${NEXT_PUBLIC_APP_URL}/auth/callback`
       }
     })
     setLoading("idle")
