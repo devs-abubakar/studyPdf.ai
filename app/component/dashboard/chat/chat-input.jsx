@@ -62,13 +62,14 @@ export function ChatInput() {
   // Handle SSE Chunk Stream Processing
   async function getResponse(currentMessages, sessionId) {
     updateAgentStates({agentAction:"Thinking..."})
+    addMessage("assistant", "")
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: currentMessages, sessionId })
       })
-
+      
       if (!response.ok) throw new Error("API Route request failed")
 
       // Extract system headers metadata
@@ -77,9 +78,8 @@ export function ChatInput() {
       
       if (persisted) updateChatPersisted(persisted)
       if (chatTitle) updateChatTitle(sessionId, chatTitle)
-
-      // Initialize an empty assistant text bubble
-      addMessage("assistant", "")
+          
+          // Initialize an empty assistant text bubble
 
       const reader = response.body?.getReader()
       if (!reader) return
@@ -127,12 +127,12 @@ export function ChatInput() {
               }
               // Type : Handle Standard Text generation chunks
               if (parsedJson.type === "token") {
+                updateAgentStates({actionProgress:null, agentAction: null})
                 appendToLastMessage(parsedJson.content)
               }
               if (parsedJson.type === "error"){
                 updateAgentStates({actionProgress:null,agentAction:null})
                 appendToLastMessage("Something went wrong")
-
               }
 
               // Type : Handle PDF compilation tool completions(still working on the pdf part) 
