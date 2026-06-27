@@ -59,7 +59,7 @@ export function ChatBox() {
     handleToBottom()
   }, [messages])
 
-  // ✅ inject copy buttons after new messages render
+
   useEffect(() => {
     const container = chatRef.current
     if (!container) return

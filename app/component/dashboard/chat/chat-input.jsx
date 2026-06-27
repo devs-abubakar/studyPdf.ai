@@ -26,11 +26,9 @@ export function ChatInput() {
   const chats = useChatStore((state) => state.chats)
   const updateChatTitle = useChatStore((state) => state.updateChatTitle)
   const updateChatPersisted = useChatStore((state) => state.updateChatPersisted)
-  const setAgentAction = useChatStore((state)=>state.setAgentAction)
-  const setActionProgress = useChatStore((state)=>state.setActionProgress)
   const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
-  const updateLastMessage = useChatStore((state)=>state.updateLastMessage)
+
   const actionProgress = useChatStore((state)=>state.agentStates.actionProgress)
   const agentAction = useChatStore((state)=>state.agentStates.agentAction)
   const updateAgentStates = useChatStore((state)=>state.updateAgentStates)
@@ -210,6 +208,7 @@ export function ChatInput() {
     setQuery("")
     const cleanedMessages = toLLMMessages(messages)
     const currentMessages = [...(cleanedMessages || []), userMessage]
+    console.log("Messages before going to the chat:",currentMessages)
     await getResponse(currentMessages, currentSessionId)
   }
 

@@ -1,3 +1,4 @@
+import { useChatStore } from "@/store/chat-store"
 import { MessageSquare, FileText, Sparkles } from "lucide-react"
 
 const suggestions = [
@@ -7,6 +8,9 @@ const suggestions = [
 ]
 
 export default function WelcomeScreen() {
+
+  const username = useChatStore((state)=>state.username)
+  
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-4 pb-36">
       {/* Logo / Brand mark */}
@@ -16,7 +20,7 @@ export default function WelcomeScreen() {
 
       {/* Greeting */}
       <h1 className="font-display text-3xl font-semibold text-foreground">
-        Hello, Abubakar
+        Hello, {username}
       </h1>
       <p className="mt-2 text-muted-foreground">
         How can I help you today?

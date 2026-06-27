@@ -12,7 +12,6 @@ export function useAuth(){
         setUser(data.user)
         setLoading(false)
     }
-
     getUser()
   }, [])
   return {

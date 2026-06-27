@@ -1,5 +1,7 @@
 export default function toLLMMessages(messages){
     console.log("Incoming messages toLLMMessages",messages)
-    return messages.map((msg)=>{msg.role,msg.content,msg.tool_calls})
+    const cleanedMessages = messages.map((msg)=>({role:msg.role,content:msg.content,tool_call:msg.tool_call}))
+    console.log(cleanedMessages) 
+    return cleanedMessages 
 
 } 

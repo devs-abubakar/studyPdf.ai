@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
 export const useChatStore = create((set, get) => ({
+
+  username:"",
+  setUsername: (username)=>set({username}),
+
   chats: [],
   activeChat: null,
   
@@ -95,9 +99,8 @@ export const useChatStore = create((set, get) => ({
           : chat
       )
     }));
-  }, // <--- This cleanly closes addMessage
+  },
 
-  // 4. Precision stream appender that modifies the final message in real-time
   appendToLastMessage: (chunk) => {
     set((state) => {
       const activeChatId = state.activeChat;
