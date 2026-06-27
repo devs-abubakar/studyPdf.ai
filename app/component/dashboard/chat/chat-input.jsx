@@ -28,9 +28,6 @@ export function ChatInput() {
   const updateChatPersisted = useChatStore((state) => state.updateChatPersisted)
   const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
-
-  const actionProgress = useChatStore((state)=>state.agentStates.actionProgress)
-  const agentAction = useChatStore((state)=>state.agentStates.agentAction)
   const updateAgentStates = useChatStore((state)=>state.updateAgentStates)
 
   // Handle keyboard submit shortcut
@@ -100,14 +97,9 @@ export function ChatInput() {
             const jsonStr = trimmedLine.replace("data:", "").trim()
             if (jsonStr.toLocaleLowerCase().includes("[done]")) continue
             
-            console.log("messages",messages)
-            // Debugging
-            console.log("=====progress and action====",agentAction,actionProgress)
-            
-            
             try {
               const parsedJson = JSON.parse(jsonStr)
-              console.log(parsedJson)
+
               // Type : Handle tool_start 
               if(parsedJson.type === "tool_start"){
                 updateAgentStates({agentAction:parsedJson.toolName})
@@ -119,13 +111,13 @@ export function ChatInput() {
               }
               
               // Type : Handle tool_end 
-              if(parsedJson.type === "tool_end"){
-                updateAgentStates({actionProgress:null,agentAction:null})
+              // if(parsedJson.type === "tool_end"){
+              //   updateAgentStates({actionProgress:null,agentAction:null})
                 
-              }
+              // }
               // Type : Handle Standard Text generation chunks
               if (parsedJson.type === "token") {
-                updateAgentStates({actionProgress:null, agentAction: null})
+                updateAgentStates({actionProgress:null,agentAction:null})
                 appendToLastMessage(parsedJson.content)
               }
               if (parsedJson.type === "error"){

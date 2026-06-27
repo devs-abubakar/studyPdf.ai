@@ -26,6 +26,61 @@ md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
   return defaultLinkRender(tokens, idx, options, env, self)
 }
 
+
+
+const ACTION_LABELS = {
+  InternetSearch: "Searching the web",
+  DocSearch:      "Reading docs",
+  PDFSearch:      "Reading your PDF",
+  Thinking:       "Thinking",
+}
+
+const ACTION_DOTS = ["Thinking"] // these get dots instead of spinner
+
+function AgentActionPill({ action, progress }) {
+  const label = ACTION_LABELS[action] ?? action
+  const useDots = ACTION_DOTS.includes(action)
+
+  return (
+    <div className="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full mb-3"
+      style={{
+        background: "rgba(255,112,191,0.08)",
+        border: "0.5px solid rgba(255,112,191,0.25)",
+      }}
+    >
+      {useDots ? (
+        <span className="flex gap-0.5 items-center h-3.5">
+          {[0, 0.2, 0.4].map((delay, i) => (
+            <span key={i} className="w-1 h-1 rounded-full animate-pulse"
+              style={{ background: "#D552A3", animationDelay: `${delay}s` }}
+            />
+          ))}
+        </span>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 18 18" fill="none" className="shrink-0 animate-spin">
+          <circle cx="9" cy="9" r="7.5" stroke="rgba(255,112,191,0.25)" strokeWidth="1.5"/>
+          <path d="M9 1.5A7.5 7.5 0 0 1 16.5 9" stroke="#D552A3" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      )}
+
+      <span className="text-xs font-medium" style={{ color: "#831C91" }}>
+        {label}
+      </span>
+
+      {progress && (
+        <>
+          <span className="text-xs" style={{ color: "#D552A3", opacity: 0.5 }}>·</span>
+          <span className="text-xs" style={{ color: "#D552A3" }}>{progress}</span>
+        </>
+      )}
+    </div>
+  )
+}
+
+
+
+
+
 export function ChatBox() {
   const activeChat = useChatStore((s) => s.activeChat);
   const currentChat = useChatStore((s) =>
@@ -119,10 +174,7 @@ export function ChatBox() {
                     ) : (
                       <>
                         { isLastAssistant && !!(agentAction || actionProgress) && (
-                          <div>
-                            <div className="font-semibold">{agentAction}</div>
-                            <div className="text-muted">{actionProgress}</div>
-                          </div>
+                          <AgentActionPill action={agentAction} progress={actionProgress}/>
                         )}
                       <div
                         className="text-sm leading-relaxed ai-message-content"
