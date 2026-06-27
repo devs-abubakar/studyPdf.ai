@@ -7,7 +7,7 @@ AI-powered study assistant that lets you upload PDFs and ask questions with accu
 ![StudyPDF.ai Demo](https://raw.githubusercontent.com/devs-abubakar/studyPdf.ai/main/public/assets/demo.gif)
 
 🚀 Live Demo
-Will be uploaded soon
+https://study-pdf-ai.vercel.app/
 
 ✨ What it does
 
@@ -35,15 +35,14 @@ Streaming responses for better UX
 ⚙️ Tech Stack
 Next.js
 Tailwind CSS
-OpenAI / Embeddings API
-Vector database (Pinecone / FAISS / Weaviate — choose yours)
+GoogleEmbeddings API
+Vector database (Supabase)
 RAG architecture
 🏗️ Architecture
 
 User PDF → Text Extraction → Chunking → Embeddings → Vector DB
 → Query Embedding → Similarity Search / MMR → Context → LLM → Answer
 
-(Add diagram here using Excalidraw)
 
 📸 Features
 📄 PDF Upload
