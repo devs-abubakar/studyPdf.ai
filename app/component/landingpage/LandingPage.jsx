@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion } from 'motion/react';
 import { 
   Upload, 
   MessageSquare, 
@@ -14,12 +14,10 @@ import {
   FileText, 
   ArrowRight, 
   CheckCircle2, 
-  Sparkles,
-  Search,
   BookOpen,
-  Layout,
   Menu,
-  X
+  X,
+  Cat
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -30,25 +28,34 @@ const Navbar = () => {
   
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FFFCFB]/80 backdrop-blur-md border-b border-[#FF70BF]/10">
-      <div className="max-w-7xl mx-auto px-12">
-        <div className="flex justify-between h-24 items-center">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="flex justify-between h-20 items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF70BF] to-[#831C91] flex items-center justify-center shadow-lg">
-              <BookOpen size={20} className="text-white" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF70BF] to-[#831C91] flex items-center justify-center shadow-lg">
+              <BookOpen size={18} className="text-white" />
             </div>
-            <span className="font-display font-bold text-2xl tracking-tighter text-[#831C91]">
+            <span className="font-bold text-xl tracking-tight text-[#831C91]">
               studyPdf<span className="text-[#D552A3]">.ai</span>
             </span>
           </div>
           
           <div className="hidden md:flex items-center gap-10">
-            <a href="#features" className="text-sm font-bold text-[#D552A3] hover:text-[#831C91] transition-colors uppercase tracking-wider">Features</a>
-            <a href="#how-it-works" className="text-sm font-bold text-[#D552A3] hover:text-[#831C91] transition-colors uppercase tracking-wider">How it works</a>
-            <button className="px-8 py-2.5 border-2 border-[#D552A3] rounded-full text-[#D552A3] font-bold text-sm hover:bg-[#D552A3] hover:text-white transition-all">
-              <Link href="/signIn">
-                Login
-                </Link>
-            </button>
+            <a href="#features" className="text-sm font-semibold text-[#D552A3] hover:text-[#831C91] transition-colors">Features</a>
+            <a href="#how-it-works" className="text-sm font-semibold text-[#D552A3] hover:text-[#831C91] transition-colors">How it works</a>
+            <a 
+              href="https://github.com/devs-abubakar/studyPdf.ai" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm font-semibold text-[#D552A3] hover:text-[#831C91] transition-colors"
+            >
+              <Cat size={16} />
+              Source
+            </a>
+            <Link href="/signIn">
+              <button className="px-6 py-2.5 border-2 border-[#D552A3] rounded-full text-[#D552A3] font-bold text-sm hover:bg-[#D552A3] hover:text-white transition-all">
+                Sign In
+              </button>
+            </Link>
           </div>
 
           <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
@@ -57,20 +64,21 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
       {isOpen && (
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden bg-white border-b border-gray-100 px-4 py-6"
+          className="md:hidden bg-white border-b border-gray-100 px-6 py-6"
         >
-          <div className="flex flex-col gap-4">
-            <a href="#features" className="text-lg font-medium text-gray-600">Features</a>
-            <a href="#how-it-works" className="text-lg font-medium text-gray-600">How it works</a>
-            <a href="#pricing" className="text-lg font-medium text-gray-600">Pricing</a>
-            <button className="bg-brand-purple text-white px-6 py-3 rounded-xl font-semibold text-center">
-              Get Started
-            </button>
+          <div className="flex flex-col gap-5">
+            <a href="#features" className="text-base font-semibold text-[#D552A3]" onClick={() => setIsOpen(false)}>Features</a>
+            <a href="#how-it-works" className="text-base font-semibold text-[#D552A3]" onClick={() => setIsOpen(false)}>How it works</a>
+            <a href="https://github.com/devs-abubakar/studyPdf.ai" target="_blank" rel="noopener noreferrer" className="text-base font-semibold text-[#D552A3]">GitHub</a>
+            <Link href="/signIn">
+              <button className="bg-gradient-to-r from-[#FF70BF] to-[#831C91] text-white px-6 py-3 rounded-xl font-semibold text-center w-full">
+                Sign In
+              </button>
+            </Link>
           </div>
         </motion.div>
       )}
@@ -82,102 +90,120 @@ const Navbar = () => {
 
 const Hero = () => {
   return (
-    <section className="relative pt-40 pb-20 overflow-hidden">
-      {/* Artistic Background Accents */}
+    <section className="relative pt-36 pb-20 overflow-hidden">
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-[#831C91]/5 rounded-full blur-[120px]" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#FF70BF]/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-12 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             className="flex-1 text-left"
           >
-            <div className="inline-block px-4 py-1 rounded-full bg-[#FF70BF]/10 text-[#D552A3] text-xs font-black uppercase tracking-[0.2em] mb-8 border border-[#FF70BF]/20">
-              AI-Powered Research Assistant
+            {/* Honest badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FF70BF]/10 text-[#D552A3] text-xs font-bold uppercase tracking-[0.15em] mb-8 border border-[#FF70BF]/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D552A3] animate-pulse" />
+              Open Source · Built with LangChain + Supabase
             </div>
             
-            <h1 className="font-display text-6xl lg:text-[72px] font-black text-[#831C91] leading-[1.05] mb-8">
+            <h1 className="text-5xl lg:text-[68px] font-black text-[#831C91] leading-[1.05] mb-6">
               Don't just read. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF70BF] via-[#D552A3] to-[#831C91]">
                 Understand.
               </span>
             </h1>
             
-            <p className="text-xl text-[#D552A3] mb-10 leading-relaxed font-sans max-w-lg opacity-90">
-              Upload any PDF and start a conversation. Summarize complex chapters, clarify obscure topics, and extract insights in seconds.
+            <p className="text-lg text-[#5a2d6e] mb-10 leading-relaxed max-w-lg opacity-80">
+              Upload any PDF and ask questions in plain language. 
+              Answers are grounded in your document — not hallucinated — 
+              using RAG with Max Marginal Relevance retrieval.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 mb-16">
-              <button className="bg-gradient-to-r from-[#FF70BF] via-[#D552A3] to-[#831C91] text-white px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-[0_20px_50px_rgba(255,112,191,0.3)]">
-                Upload your PDF
-              </button>
-              <button className="bg-transparent border-2 border-[#FF70BF]/30 text-[#D552A3] px-10 py-5 rounded-2xl font-black text-lg hover:bg-[#FF70BF]/5 transition-all">
-                Watch Demo
-              </button>
+            <div className="flex flex-col sm:flex-row gap-4 mb-14">
+              <Link href="/signIn">
+                <button className="bg-gradient-to-r from-[#FF70BF] via-[#D552A3] to-[#831C91] text-white px-9 py-4 rounded-2xl font-black text-base hover:scale-105 active:scale-95 transition-all shadow-[0_16px_40px_rgba(255,112,191,0.3)]">
+                  Try it free →
+                </button>
+              </Link>
+              <a 
+                href="https://github.com/devs-abubakar/studyPdf.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="flex items-center gap-2 bg-transparent border-2 border-[#FF70BF]/30 text-[#D552A3] px-9 py-4 rounded-2xl font-black text-base hover:bg-[#FF70BF]/5 transition-all">
+                  <Cat size={18} />
+                  View Source
+                </button>
+              </a>
             </div>
 
-            {/* Micro Metrics */}
-            <div className="flex items-center space-x-12 border-t border-[#FF70BF]/10 pt-10">
-              <div>
-                <div className="text-3xl font-black text-[#831C91]">1.2M+</div>
-                <div className="text-[10px] uppercase font-black tracking-widest text-[#D552A3] mt-1">Documents Parsed</div>
-              </div>
-              <div className="w-px h-10 bg-[#FF70BF]/20"></div>
-              <div>
-                <div className="text-3xl font-black text-[#831C91]">99.8%</div>
-                <div className="text-[10px] uppercase font-black tracking-widest text-[#D552A3] mt-1">Accuracy Rate</div>
-              </div>
+            {/* Honest tech stack pills instead of fake stats */}
+            <div className="flex flex-wrap gap-2">
+              {['Next.js', 'LangChain', 'Supabase', 'OpenAI', 'RAG + MMR', 'Streaming'].map((tech) => (
+                <span 
+                  key={tech}
+                  className="px-3 py-1 rounded-full bg-[#831C91]/8 border border-[#FF70BF]/15 text-[#831C91] text-xs font-bold"
+                >
+                  {tech}
+                </span>
+              ))}
             </div>
           </motion.div>
 
+          {/* Mockup card — unchanged, it's good */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="flex-1 relative"
           >
-             {/* Central Mockup Card from Theme */}
-            <div className="relative w-full max-w-[480px] ml-auto p-4 bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(131,28,145,0.15)] border border-[#FF70BF]/10">
-              <div className="flex items-center space-x-4 mb-8 border-b border-gray-50 pb-6 p-4">
-                <div className="w-12 h-12 bg-[#FF70BF]/10 rounded-2xl flex items-center justify-center text-[#FF70BF]">
-                  <FileText />
+            <div className="relative w-full max-w-[460px] ml-auto p-4 bg-white rounded-[36px] shadow-[0_32px_64px_-16px_rgba(131,28,145,0.15)] border border-[#FF70BF]/10">
+              <div className="flex items-center space-x-4 mb-6 border-b border-gray-50 pb-5 p-4">
+                <div className="w-11 h-11 bg-[#FF70BF]/10 rounded-2xl flex items-center justify-center text-[#FF70BF]">
+                  <FileText size={20} />
                 </div>
                 <div>
-                  <div className="text-sm font-black text-[#831C91]">quantum_physics_v3.pdf</div>
-                  <div className="text-[10px] font-bold text-[#D552A3]/50 uppercase tracking-tighter">12.4 MB • 42 Pages</div>
+                  <div className="text-sm font-black text-[#831C91]">quantum_mechanics.pdf</div>
+                  <div className="text-[10px] font-bold text-[#D552A3]/50 uppercase tracking-tighter">8.2 MB • 38 Pages</div>
                 </div>
               </div>
               
-              <div className="space-y-6 px-4 pb-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-[#831C91] shrink-0 flex items-center justify-center text-[10px] text-white font-bold">AI</div>
+              <div className="space-y-5 px-4 pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-[#831C91] shrink-0 flex items-center justify-center text-[9px] text-white font-bold">AI</div>
                   <div className="bg-[#FF70BF]/5 p-4 rounded-3xl rounded-tl-none text-xs text-[#831C91] leading-relaxed border border-[#FF70BF]/10">
-                    I've analyzed the core arguments. You'll find three main components regarding quantum entanglement on page 14.
+                    Based on page 14, the Schrödinger equation describes how quantum state evolves over time. Here's the key part relevant to your question...
                   </div>
                 </div>
-                <div className="flex items-start justify-end gap-4">
-                  <div className="bg-gradient-to-r from-[#FF70BF] to-[#D552A3] p-4 rounded-3xl rounded-tr-none text-xs text-white leading-relaxed font-bold shadow-lg shadow-pink-100">
-                    Summarize the paradox in simple terms.
+                <div className="flex items-start justify-end gap-3">
+                  <div className="bg-gradient-to-r from-[#FF70BF] to-[#D552A3] p-4 rounded-3xl rounded-tr-none text-xs text-white leading-relaxed font-semibold shadow-lg shadow-pink-100 max-w-[75%]">
+                    Explain the wave function collapse in simple terms.
                   </div>
                 </div>
-                <div className="h-2 bg-[#FF70BF]/5 w-full rounded-full overflow-hidden">
+                <div className="h-1.5 bg-[#FF70BF]/8 w-full rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: "66%" }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
                     className="h-full bg-gradient-to-r from-[#FF70BF] via-[#D552A3] to-[#831C91]" 
                   />
                 </div>
               </div>
             </div>
             
-            {/* Floating Tags */}
-            <div className="absolute top-10 right-0 bg-white px-5 py-3 rounded-2xl shadow-xl border border-[#FF70BF]/20 flex items-center space-x-3 z-30">
-              <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span>
-              <span className="text-[11px] font-black uppercase text-[#831C91] tracking-wider">AI Summarizing...</span>
+            <div className="absolute top-8 -right-2 bg-white px-4 py-2.5 rounded-2xl shadow-xl border border-[#FF70BF]/15 flex items-center space-x-2 z-30">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              <span className="text-[10px] font-black uppercase text-[#831C91] tracking-wider">Streaming response...</span>
+            </div>
+
+            {/* Source citation badge — shows real feature */}
+            <div className="absolute -bottom-4 left-4 bg-white px-4 py-2.5 rounded-2xl shadow-xl border border-[#FF70BF]/15 flex items-center space-x-2 z-30">
+              <CheckCircle2 size={12} className="text-[#D552A3]" />
+              <span className="text-[10px] font-black uppercase text-[#831C91] tracking-wider">Source: page 14</span>
             </div>
           </motion.div>
         </div>
@@ -189,14 +215,14 @@ const Hero = () => {
 const FeatureCard = ({ icon: Icon, title, description, color }) => {
   return (
     <motion.div 
-      whileHover={{ y: -10 }}
+      whileHover={{ y: -8 }}
       className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
     >
-      <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-        <Icon className="text-white" size={28} />
+      <div className={`w-12 h-12 rounded-2xl ${color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+        <Icon className="text-white" size={22} />
       </div>
-      <h3 className="font-display font-bold text-xl mb-3 text-gray-900">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <h3 className="font-bold text-xl mb-3 text-gray-900">{title}</h3>
+      <p className="text-gray-500 leading-relaxed text-sm">{description}</p>
     </motion.div>
   );
 };
@@ -204,34 +230,35 @@ const FeatureCard = ({ icon: Icon, title, description, color }) => {
 const Features = () => {
   return (
     <section id="features" className="py-24 bg-white relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-20">
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Master your materials <span className="text-brand-pink">faster</span>
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-[#831C91] mb-5">
+            Built different
           </h2>
-          <p className="max-w-2xl mx-auto text-lg text-gray-600 font-sans">
-            Designed for students, researchers, and professionals who need to process deep information without the overwhelm.
+          <p className="max-w-xl mx-auto text-base text-[#5a2d6e]/70 leading-relaxed">
+            Most PDF tools repeat irrelevant chunks. This one uses MMR retrieval 
+            to reduce repetition and keep answers grounded in what you actually uploaded.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <FeatureCard 
             icon={Upload} 
-            color="bg-brand-pink"
-            title="Instant Upload" 
-            description="Drag and drop any PDF. We support research papers, textbooks, and multi-page reports with OCR capabilities."
+            color="bg-[#FF70BF]"
+            title="Upload any PDF" 
+            description="Drop in research papers, textbooks, or long reports. Text is chunked and embedded for accurate retrieval — not just keyword search."
           />
           <FeatureCard 
             icon={MessageSquare} 
-            color="bg-brand-pink-dark"
-            title="Contextual Chat" 
-            description="Ask specific questions about charts, tables, or complex paragraphs. Get answers with direct source citations."
+            color="bg-[#D552A3]"
+            title="Ask real questions" 
+            description="Ask about specific tables, arguments, or paragraphs. Answers include the exact source chunk so you can verify them yourself."
           />
           <FeatureCard 
             icon={Zap} 
-            color="bg-brand-purple"
-            title="Smart Summaries" 
-            description="Generate executive summaries, key takeaways, or study questions instantly using advanced language models."
+            color="bg-[#831C91]"
+            title="Streaming responses" 
+            description="Answers stream in real-time like ChatGPT — no waiting for a full response before you start reading."
           />
         </div>
       </div>
@@ -239,97 +266,89 @@ const Features = () => {
   );
 };
 
-const InteractiveSVGSection = () => {
-  return (
-    <section className="py-24 bg-brand-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1">
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-              Visual Learning <br />
-              <span className="text-brand-purple">Reinforced by AI</span>
-            </h2>
-            
-            <div className="space-y-6">
-              {[
-                { title: "Deep Analysis", desc: "Our AI reads between the lines to find hidden patterns." },
-                { title: "Citation Engine", desc: "Every answer comes with page numbers and highlights." },
-                { title: "Multi-Language Support", desc: "Upload in any language, chat in your own." }
-              ].map((item, i) => (
-                <div key={i} className="flex gap-4 items-start">
-                  <div className="mt-1 w-6 h-6 rounded-full bg-brand-pink/20 flex items-center justify-center text-brand-pink shrink-0">
-                    <CheckCircle2 size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">{item.title}</h4>
-                    <p className="text-gray-600 text-sm">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <button className="mt-10 inline-flex items-center gap-2 font-bold text-brand-purple hover:gap-4 transition-all">
-              Learn about our engine <ArrowRight size={20} />
-            </button>
-          </div>
-          
-          <div className="flex-1 relative">
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              className="relative aspect-square w-full max-w-md mx-auto"
-            >
-              {/* Complex Interactive SVG Illustration */}
-              <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-2xl">
-                <defs>
-                  <filter id="shadow">
-                    <feDropShadow dx="0" dy="10" stdDeviation="15" floodOpacity="0.1" />
-                  </filter>
-                </defs>
-                
-                {/* Background Shapes */}
-                <motion.rect 
-                  animate={{ 
-                    rotate: [0, 90, 180, 270, 360],
-                    scale: [1, 1.1, 1]
-                  }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  x="50" y="50" width="300" height="300" rx="60" fill="#FF70BF" fillOpacity="0.05" 
-                />
-                
-                {/* The "PDF" */}
-                <rect x="120" y="100" width="160" height="200" rx="12" fill="white" filter="url(#shadow)" />
-                <rect x="140" y="130" width="120" height="8" rx="4" fill="#eee" />
-                <rect x="140" y="150" width="90" height="8" rx="4" fill="#eee" />
-                <rect x="140" y="170" width="110" height="8" rx="4" fill="#eee" />
-                
-                {/* AI "Pulse" */}
-                <motion.circle 
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  cx="280" cy="280" r="40" fill="#831C91" fillOpacity="0.1" 
-                />
-                
-                {/* Chat Bubble */}
-                <motion.g
-                  initial={{ y: 20, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <path d="M250 240 C 250 220, 350 220, 350 240 C 350 260, 310 260, 300 280 C 290 260, 250 260, 250 240" fill="white" filter="url(#shadow)" />
-                  <path d="M280 240 H320 M280 250 H305" stroke="#FF70BF" strokeWidth="4" strokeLinecap="round" />
-                </motion.g>
+const HowItWorks = () => {
+  const steps = [
+    {
+      number: "01",
+      title: "Upload your PDF",
+      description: "Your document is parsed, split into semantic chunks, and embedded using OpenAI's embedding model."
+    },
+    {
+      number: "02", 
+      title: "Ask a question",
+      description: "Your query is embedded and compared against document chunks using vector similarity search with MMR to reduce repetition."
+    },
+    {
+      number: "03",
+      title: "Get a grounded answer",
+      description: "The most relevant chunks are passed as context to the LLM. Answers stay within your document — no hallucination."
+    }
+  ];
 
-                {/* Connections */}
-                <motion.path 
-                  d="M180 180 L 280 240" 
-                  stroke="#FF70BF" 
-                  strokeWidth="2" 
-                  strokeDasharray="5 5"
-                  animate={{ strokeDashoffset: [0, -20] }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                />
-              </svg>
+  return (
+    <section id="how-it-works" className="py-24 bg-[#FFFCFB]">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-[#831C91] mb-5">
+            How it works
+          </h2>
+          <p className="max-w-xl mx-auto text-base text-[#5a2d6e]/70">
+            RAG architecture — Retrieval Augmented Generation. Your document is the source of truth.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          {/* Connector line */}
+          <div className="hidden md:block absolute top-8 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-gradient-to-r from-[#FF70BF]/30 via-[#D552A3]/50 to-[#831C91]/30" />
+          
+          {steps.map((step, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.15 }}
+              className="relative flex flex-col items-start"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF70BF] to-[#831C91] flex items-center justify-center mb-6 shadow-lg shadow-pink-100 z-10">
+                <span className="text-white font-black text-sm">{step.number}</span>
+              </div>
+              <h3 className="font-black text-lg text-[#831C91] mb-3">{step.title}</h3>
+              <p className="text-[#5a2d6e]/70 text-sm leading-relaxed">{step.description}</p>
             </motion.div>
+          ))}
+        </div>
+
+        {/* Architecture — honest and technical */}
+        <div className="mt-16 p-8 bg-white rounded-3xl border border-[#FF70BF]/10 shadow-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#D552A3]/60 mb-6">Architecture</p>
+          <div className="flex flex-wrap items-center gap-2 text-sm font-mono text-[#831C91]">
+            {[
+              'PDF Upload',
+              '→',
+              'Text Extraction',
+              '→',
+              'Chunking',
+              '→',
+              'OpenAI Embeddings',
+              '→',
+              'Supabase pgvector',
+              '→',
+              'MMR Retrieval',
+              '→',
+              'LangChain LLM',
+              '→',
+              'Streaming Answer'
+            ].map((item, i) => (
+              <span 
+                key={i} 
+                className={item === '→' 
+                  ? 'text-[#FF70BF] font-bold' 
+                  : 'px-3 py-1.5 bg-[#FF70BF]/8 rounded-lg text-xs border border-[#FF70BF]/15'
+                }
+              >
+                {item}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -340,35 +359,40 @@ const InteractiveSVGSection = () => {
 const CTA = () => {
   return (
     <section className="py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-brand-purple rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
-          {/* Accent Shapes */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-pink/20 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-pink-dark/20 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="bg-gradient-to-br from-[#831C91] to-[#5a1065] rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF70BF]/15 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FF70BF]/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2" />
           
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             className="relative z-10"
           >
-            <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-8">
-              Ready to learn smarter?
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              Stop skimming.<br />Start understanding.
             </h2>
-            <p className="max-w-xl mx-auto text-brand-pink/80 text-lg md:text-xl mb-12">
-              Join 50,000+ students and researchers saving hours every week. Upload your first PDF in seconds.
+            <p className="max-w-md mx-auto text-[#FF70BF]/80 text-base mb-10 leading-relaxed">
+              Upload a PDF and ask your first question in under 30 seconds. 
+              No credit card. No setup. Just answers from your document.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-brand-purple px-10 py-5 rounded-full font-bold text-lg hover:scale-105 active:scale-95 transition-all">
-                Get Started for Free
-              </button>
-              <button className="bg-transparent border-2 border-white/20 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-white/10 transition-all">
-                View Enterprise Plans
-              </button>
+              <Link href="/signIn">
+                <button className="bg-white text-[#831C91] px-10 py-4 rounded-full font-black text-base hover:scale-105 active:scale-95 transition-all shadow-lg">
+                  Try it free →
+                </button>
+              </Link>
+              <a href="https://github.com/devs-abubakar/studyPdf.ai" target="_blank" rel="noopener noreferrer">
+                <button className="flex items-center justify-center gap-2 bg-transparent border-2 border-white/20 text-white px-10 py-4 rounded-full font-black text-base hover:bg-white/10 transition-all">
+                  <Cat size={18} />
+                  Star on GitHub
+                </button>
+              </a>
             </div>
-            
-            <p className="mt-8 text-white/40 text-sm">
-              No credit card required • GDPR Compliant • AES-256 Encryption
+
+            <p className="mt-8 text-white/30 text-xs font-semibold uppercase tracking-wider">
+              Open source · Built by Abubakar · Self-taught · Pre-university
             </p>
           </motion.div>
         </div>
@@ -379,36 +403,25 @@ const CTA = () => {
 
 const Footer = () => {
   return (
-    <footer className="py-20 bg-white/50 backdrop-blur-md border-t border-[#FF70BF]/10">
-      <div className="max-w-7xl mx-auto px-12 mb-16">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-[10px] uppercase tracking-[0.3em] font-black text-[#D552A3]/50">Trusted by researchers at</div>
-          <div className="flex flex-wrap justify-center gap-12 grayscale opacity-30 items-center">
-            <span className="font-serif text-xl font-black">STANFORD</span>
-            <span className="font-serif text-xl font-black">MIT</span>
-            <span className="font-serif text-xl font-black">HARVARD</span>
-            <span className="font-serif text-xl font-black">OXFORD</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-12 pt-12 border-t border-[#FF70BF]/5 flex flex-col md:flex-row justify-between items-center gap-8">
+    <footer className="py-12 bg-white border-t border-[#FF70BF]/10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF70BF] to-[#831C91] flex items-center justify-center">
-            <BookOpen size={16} className="text-white" />
+            <BookOpen size={15} className="text-white" />
           </div>
-          <span className="font-display font-bold text-xl text-[#831C91]">studyPdf<span className="text-[#D552A3]">.ai</span></span>
+          <span className="font-bold text-lg text-[#831C91]">studyPdf<span className="text-[#D552A3]">.ai</span></span>
         </div>
         
-        <div className="flex gap-10 text-[10px] font-black uppercase tracking-widest text-[#D552A3]/60">
+        <div className="flex gap-8 text-xs font-bold uppercase tracking-widest text-[#D552A3]/60">
+          <a href="https://github.com/devs-abubakar/studyPdf.ai" target="_blank" rel="noopener noreferrer" className="hover:text-[#831C91] transition-colors flex items-center gap-1">
+            <Cat size={12} /> Source
+          </a>
           <a href="#" className="hover:text-[#831C91] transition-colors">Privacy</a>
-          <a href="#" className="hover:text-[#831C91] transition-colors">Terms</a>
-          <a href="#" className="hover:text-[#831C91] transition-colors">Twitter</a>
           <a href="#" className="hover:text-[#831C91] transition-colors">Contact</a>
         </div>
         
-        <p className="text-[10px] font-black uppercase tracking-widest text-gray-300">
-          © 2026 studyPdf.ai.
+        <p className="text-xs font-semibold text-gray-300 uppercase tracking-widest">
+          © 2026 studyPdf.ai
         </p>
       </div>
     </footer>
@@ -417,11 +430,11 @@ const Footer = () => {
 
 export default function LandingPage() {
   return (
-    <div className="w-full min-h-screen font-sans overflow-hidden">
+    <div className="w-full min-h-screen font-sans overflow-hidden bg-[#FFFCFB]">
       <Navbar />
       <Hero />
       <Features />
-      <InteractiveSVGSection />
+      <HowItWorks />
       <CTA />
       <Footer />
     </div>
