@@ -237,16 +237,16 @@
   margin: 0.75rem 0;
   border: 1px solid var(--border);
   /* no padding here — the code-block-header + hljs handles it */
-  padding: 0;
+  padding: 1rem 0.8rem;
   position: relative;
-  background-color: oklch(0.18 0.005 34.3) !important; 
+  background-color: oklch(29.758% 0.01124 271.029) !important; 
 }
 
 /* hljs sets its own padding on pre.hljs — override it so our
    header lines up flush, and code body gets clean inset */
 .ai-message-content pre.hljs,
 .ai-message-content pre > code.hljs {
-  padding: 0;
+  padding: 2px;
   border-radius: 0;
   background: transparent !important;
 }
@@ -272,7 +272,7 @@
   justify-content: space-between;
   padding: 0.4rem 0.85rem;
   border-bottom: 1px solid var(--border);
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(29, 27, 27, 0.853)
 }
 .code-lang {
   font-size: 0.75rem;
@@ -298,8 +298,8 @@
    Use !important only here to beat hljs which also targets code
    ─────────────────────────────────────────────────────────────── */
 .ai-message-content code:not(pre code) {
-  background-color: oklch(13.582% 0.00194 16.959 / 0.677) !important;
-  color: var(--color-brand-purple) !important;
+  background-color: oklch(29.598% 0.01262 285.574 / 0.677) !important;
+  color: var(--color-foreground) !important;
   padding: 0.15rem 0.4rem;
   border-radius: var(--radius-sm, 4px);
   font-size: 0.875em;   /* em = relative to parent, scales with surrounding text */
