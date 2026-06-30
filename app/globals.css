@@ -239,6 +239,7 @@
   /* no padding here — the code-block-header + hljs handles it */
   padding: 0;
   position: relative;
+  background-color: oklch(0.18 0.005 34.3) !important; 
 }
 
 /* hljs sets its own padding on pre.hljs — override it so our
@@ -247,7 +248,7 @@
 .ai-message-content pre > code.hljs {
   padding: 0;
   border-radius: 0;
-  background: transparent;
+  background: transparent !important;
 }
 
 /* actual code inside pre */
@@ -297,7 +298,7 @@
    Use !important only here to beat hljs which also targets code
    ─────────────────────────────────────────────────────────────── */
 .ai-message-content code:not(pre code) {
-  background-color: oklch(0.922 0.005 34.3 / 35%) !important;
+  background-color: oklch(13.582% 0.00194 16.959 / 0.677) !important;
   color: var(--color-brand-purple) !important;
   padding: 0.15rem 0.4rem;
   border-radius: var(--radius-sm, 4px);
@@ -407,7 +408,7 @@
 
 /* ── Dark mode ──────────────────────────────────────────────────*/
 .dark .ai-message-content code:not(pre code) {
-  background-color: oklch(0.18 0.005 34.3 / 70%) !important;
+  background-color: oklch(0% 0 0 / 0.7) !important;
   color: var(--color-brand-pink) !important;
 }
 .dark .ai-message-content th {

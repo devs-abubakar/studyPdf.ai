@@ -56,6 +56,7 @@ export function ChatInput() {
 
   // Handle SSE Chunk Stream Processing
   async function getResponse(currentMessages, sessionId) {
+    setSelectedFile(null)
     updateAgentStates({agentAction:"Thinking..."})
     addMessage("assistant", "")
     try {
