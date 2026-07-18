@@ -9,9 +9,11 @@ export function RecentChats({collapsed}) {
   const setActiveChat = useChatStore((s)=>s.setActiveChat)
   const chats= useChatStore((s)=>s.chats)
   const setChats = useChatStore((s)=>s.setChats)
+  const setQuery = useChatStore((s)=>s.setQuery)
 
   function handleClick(id){
     console.log("opening the chat with id : ",id)
+    setQuery("")
     setActiveChat(id)
   }
   

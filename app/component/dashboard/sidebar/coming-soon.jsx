@@ -14,9 +14,7 @@ export function ComingSoon({collapsed}) {
 
       <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
         <li>AI Voice Chat</li>
-        <li>PDF Upload</li>
-        <li>AI Memory</li>
-        <li>Code Interpreter</li>
+        <li>Real time tests by AI</li>
       </ul>
     </div>
   )

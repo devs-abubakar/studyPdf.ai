@@ -5,6 +5,9 @@ export const useChatStore = create((set, get) => ({
   username:"",
   setUsername: (username)=>set({username}),
 
+  query : "",
+  setQuery : (newQuery)=>set({newQuery}),
+  
   chats: [],
   activeChat: null,
   

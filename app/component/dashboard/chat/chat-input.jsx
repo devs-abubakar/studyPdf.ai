@@ -29,6 +29,7 @@ export function ChatInput() {
   const currentChat = chats.find(c => c.sessionId === activeChat)
   const messages = currentChat?.messages || []
   const updateAgentStates = useChatStore((state)=>state.updateAgentStates)
+  const firstQuery = useChatStore((state)=>state.query)
 
   // Handle keyboard submit shortcut
   const handleKeyDown = (e) => {
@@ -146,6 +147,11 @@ export function ChatInput() {
     }
   }
       
+  useEffect(() => {
+    setQuery(firstQuery)
+  }, [])
+  
+
   async function uploadFile(formData) {
     setUploadingFile(true)
     try {
