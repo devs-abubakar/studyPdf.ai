@@ -8,7 +8,7 @@ export function DashboardShell({ children }) {
 
       {/* top bar */}
       <header className="flex h-14 items-center border-b px-3">
-        <SidebarTrigger />
+        <SidebarTrigger className="rounded-full" />
       </header>
 
       {/* content */}

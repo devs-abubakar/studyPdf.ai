@@ -213,7 +213,7 @@ export function ChatInput() {
 
   return (
     <div className="mx-auto max-w-3xl w-full">
-      <div className="flex flex-col items-start gap-2 rounded-2xl border bg-background p-2 shadow-sm">
+      <div className="flex flex-col items-start gap-2 rounded-2xl border bg-background pb-2 px-2 shadow-sm">
         <div>
           {selectedFile && (
             <FilePill 
@@ -230,7 +230,7 @@ export function ChatInput() {
           onChange={(e) => setQuery(e.target.value)}
           value={query}
           onKeyDown={handleKeyDown}
-          className="min-h-13 max-h-40 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
+          className="min-h-10 max-h-40 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
         />
 
         <div className='flex w-full justify-between items-center'>

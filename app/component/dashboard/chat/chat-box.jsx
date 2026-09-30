@@ -103,7 +103,7 @@ export function ChatBox() {
     const el = chatRef.current;
     if (!el) return;
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setShowBtn(distanceFromBottom > 120);
+    setShowBtn(distanceFromBottom > 200);
   };
 
   function handleToBottom() {
