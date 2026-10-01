@@ -1,6 +1,6 @@
 import { ChatItem } from "./chat-item"
 import {useChatStore} from "@/store/chat-store"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { supabase } from "@/app/lib/supabase/client"
 
 
@@ -10,6 +10,7 @@ export function RecentChats({collapsed}) {
   const chats= useChatStore((s)=>s.chats)
   const setChats = useChatStore((s)=>s.setChats)
   const setQuery = useChatStore((s)=>s.setQuery)
+  const searchQuery = useChatStore((s)=>s.searchQuery)
 
   function handleClick(id){
     console.log("opening the chat with id : ",id)
@@ -17,6 +18,13 @@ export function RecentChats({collapsed}) {
     setActiveChat(id)
   }
   
+  const filteredChats = useMemo(() => {
+    if (!searchQuery.trim()) return chats
+    const query = searchQuery.toLowerCase()
+    return chats.filter(chat => 
+      chat.title?.toLowerCase().includes(query)
+    )
+  }, [chats, searchQuery])
 
   useEffect(() => {
     async function loadChats(){
@@ -44,7 +52,7 @@ export function RecentChats({collapsed}) {
       </h3>
 
       <div className="space-y-1">
-        {chats.map((chat) => (
+        {filteredChats.map((chat) => (
           <ChatItem
             key={chat.sessionId}
             title={chat.title}
