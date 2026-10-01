@@ -32,8 +32,8 @@ export function AppSidebar() {
         <div className="flex-1 overflow-y-auto px-2">
           <RecentChats collapsed={collapsed} />
         </div>
-
-        <ComingSoon collapsed={collapsed} />
+        {/*  Remove UI for Now */}
+        {/*<ComingSoon collapsed={collapsed} />*/}
 
       </SidebarContent>
 
