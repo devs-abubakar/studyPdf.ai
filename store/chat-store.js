@@ -8,6 +8,9 @@ export const useChatStore = create((set, get) => ({
   query : "",
   setQuery : (newQuery)=>set({newQuery}),
   
+  searchQuery: "",
+  setSearchQuery: (searchQuery)=>set({searchQuery}),
+  
   chats: [],
   activeChat: null,
   
