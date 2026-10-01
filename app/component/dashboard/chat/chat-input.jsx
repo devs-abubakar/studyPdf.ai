@@ -231,7 +231,7 @@ export function ChatInput() {
           onChange={(e) => setQuery(e.target.value)}
           value={query}
           onKeyDown={handleKeyDown}
-          className="min-h-10 max-h-40 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
+          className="min-h-10 max-h-40 pt-2 px-1 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
         />
 
         <div className='flex w-full justify-between items-center'>
