@@ -149,13 +149,12 @@ export function ChatBox() {
   }, [messages])
 
   return (
-    <div className="relative flex flex-col min-h-0 flex-1 w-full">
+    <div className="relative flex flex-row-reverse min-h-0 flex-1 w-full">
       {!activeChat ? (
         <WelcomeScreen />
       ) : (
         <div ref={chatRef} onScroll={handleScroll} className="absolute  inset-0 flex-1 overflow-y-auto pb-36 px-4">
           <div className="mx-auto max-w-3xl py-4 space-y-4">
-
             {messages.map((msg, id) => {
               const isLastAssistant = id == lastAssistantIndex
               const isUser = msg.role === "user";
@@ -163,7 +162,7 @@ export function ChatBox() {
                 <div key={id} className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
                   <div className={`min-w-0 rounded-2xl px-4 py-3 ${
                     isUser
-                      ? "bg-brand-purple max-w-[80%] text-white rounded-br-md"
+                      ? "bg-secondary max-w-[80%] rounded-br-md"
                       : "bg-transparent max-w-full text-foreground rounded-bl-md"
                   }`}>
 

@@ -25,15 +25,15 @@ export function AppSidebar() {
         <SidebarHeaderSection collapsed={collapsed} />
       </SidebarHeader>
 
-      <SidebarContent className="flex flex-col gap-4 overflow-hidden">
+      <SidebarContent className="flex flex-col gap-4 overflow-hidden pt-1">
         
         <SidebarSearch collapsed={collapsed} />
 
         <div className="flex-1 overflow-y-auto px-2">
           <RecentChats collapsed={collapsed} />
         </div>
-
-        <ComingSoon collapsed={collapsed} />
+        {/*  Remove UI for Now */}
+         <ComingSoon collapsed={collapsed} />
 
       </SidebarContent>
 

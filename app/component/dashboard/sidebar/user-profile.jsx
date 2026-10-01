@@ -40,10 +40,10 @@ export function UserProfile({ collapsed }) {
   return (
     <div
       className={`
-        flex items-center rounded-xl border
+        flex items-center rounded-xl
         ${collapsed
           ? "justify-center p-2"
-          : "w-auto gap-3 p-3"
+          : "w-auto gap-3 p-3 border"
         }
       `}
     >

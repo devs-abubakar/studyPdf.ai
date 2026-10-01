@@ -8,6 +8,9 @@ export const useChatStore = create((set, get) => ({
   query : "",
   setQuery : (newQuery)=>set({newQuery}),
   
+  searchQuery: "",
+  setSearchQuery: (searchQuery)=>set({searchQuery}),
+  
   chats: [],
   activeChat: null,
   
@@ -47,6 +50,16 @@ export const useChatStore = create((set, get) => ({
   setChats: (chats) => set({ chats }),
   setActiveChat: (chatId) => set({ activeChat: chatId }),
   
+  removeChat: (sessionId) =>
+    set((state) => ({
+      chats: state.chats.filter(
+        (chat) => chat.sessionId !== sessionId
+      ),
+      activeChat:
+        state.activeChat === sessionId
+          ? null
+          : state.activeChat,
+    })),
   // 1. Hydrate historical messages into a specific chat
   setHistoricalMessages: (sessionId, messages) => set((state) => ({
     chats: state.chats.map((chat) =>
