@@ -19,7 +19,6 @@ import {
 import {supabase} from "@/app/lib/supabase/client"
 
 
-
 export function ChatInput() {
     const [query, setQuery] = useState("")
     const [uploadingFile, setUploadingFile] = useState(false)
@@ -283,30 +282,34 @@ export function ChatInput() {
                 <div className='flex w-full justify-between items-center'>
                     <div className={"flex items-center gap-2"}>
                         <UploadDropdown onSelect={handleSelectItem}/>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button variant="outline">Resources</Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Your Uploaded Documents</DialogTitle>
-                                    <DialogDescription>
-                                        These documents were uploaded in this chat session.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className={"flex flex-wrap gap-2"}>
-                                    {sessionFiles.length > 0 ? (
-                                        sessionFiles.map((file) => (
-                                            <Button key={file.id} variant={"secondary"}>
-                                                {file.file_name}
-                                            </Button>
-                                        ))
-                                    ) : (
-                                        <p className="text-muted-foreground text-sm">No documents uploaded yet.</p>
-                                    )}
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                        {
+                            sessionFiles.length !== 0 && (
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline">Resources</Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Your Uploaded Documents</DialogTitle>
+                                            <DialogDescription>
+                                                These documents were uploaded in this chat session.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className={"flex flex-wrap gap-2"}>
+                                            {sessionFiles.length > 0 ? (
+                                                sessionFiles.map((file) => (
+                                                    <Button key={file.id} variant={"secondary"}>
+                                                        {file.file_name}
+                                                    </Button>
+                                                ))
+                                            ) : (
+                                                <p className="text-muted-foreground text-sm">No documents uploaded yet.</p>
+                                            )}
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            )
+                        }
                     </div>
                     <input
                         ref={fileRef}
