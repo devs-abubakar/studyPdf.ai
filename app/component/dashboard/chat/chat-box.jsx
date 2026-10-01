@@ -149,7 +149,7 @@ export function ChatBox() {
   }, [messages])
 
   return (
-    <div className="relative flex flex-col min-h-0 flex-1 w-full">
+    <div className="relative flex flex-row-reverse min-h-0 flex-1 w-full">
       {!activeChat ? (
         <WelcomeScreen />
       ) : (
