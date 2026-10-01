@@ -268,7 +268,7 @@ export function ChatItem({
             )}
           </div>
 
-          <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-0">
+          <DialogFooter className="flex md:gap-2 flex-row gap-0">
             <Button
               variant="outline"
               disabled={renameLoading}
@@ -316,7 +316,7 @@ export function ChatItem({
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:gap-0">
+          <DialogFooter className="flex md:gap-2 flex-row gap-0">
             <Button
               variant="outline"
               disabled={deleteLoading}
