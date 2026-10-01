@@ -1,14 +1,17 @@
 import React from "react";
+import { ArrowDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 
 const ScrollToBottom = ({ onClick }) => {
   return (
     <div className="mb-2 w-full flex justify-center">
-      <button
+      <Button
         onClick={onClick}
-        className="flex items-center justify-center w-10 h-10 bg-black text-white rounded-lg shadow-lg hover:scale-105 transition"
+        size={"icon"}
       >
-        ↓
-      </button>
+        <ArrowDown />
+      </Button>
     </div>
   );
 };
