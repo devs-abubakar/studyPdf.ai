@@ -12,14 +12,21 @@ import { buildAgentStream } from "@/app/lib/langgraph/stream"
 export const runtime = "nodejs"
 export const maxDuration = 60
 
-export async function POST(req) {
+export async function POST(req, {params}) {
   const startTime = Date.now()
+  const resolvedParams = await params
+  const sessionId = resolvedParams.id
+  
+  if (!sessionId){
+    return NextResponse.json({status : 401 , message: "chat not found"})
+  }
   try{
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ status: 401, message: "unauthorized user" })
 
-  const { messages, sessionId } = await req.json()
+  const { messages} = await req.json()
+  
   console.log("messages in the route and the session id  ===>",messages,sessionId)
   const userId = user.id
   const latestMessage = messages[messages.length - 1]

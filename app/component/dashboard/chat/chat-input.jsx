@@ -31,6 +31,7 @@ export function ChatInput() {
   const updateAgentStates = useChatStore((state)=>state.updateAgentStates)
   const firstQuery = useChatStore((state)=>state.query)
 
+
   // Handle keyboard submit shortcut
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -61,7 +62,7 @@ export function ChatInput() {
     updateAgentStates({agentAction:"Thinking..."})
     addMessage("assistant", "")
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch(`/api/chat/${sessionId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: currentMessages, sessionId })
