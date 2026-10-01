@@ -57,7 +57,8 @@ export function RecentChats({collapsed}) {
             key={chat.sessionId}
             title={chat.title}
             onClick={()=>handleClick(chat.sessionId)}
-            active = {activeChat == chat.sessionId}
+            active={activeChat == chat.sessionId}
+            sessionId={chat.sessionId}
           />
         ))}
       </div>
