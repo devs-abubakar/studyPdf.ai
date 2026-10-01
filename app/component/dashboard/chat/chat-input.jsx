@@ -16,6 +16,9 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {supabase} from "@/app/lib/supabase/client"
+
+
 
 export function ChatInput() {
     const [query, setQuery] = useState("")
@@ -23,6 +26,7 @@ export function ChatInput() {
     const [isReady, setIsReady] = useState(false)
     const [selectedFile, setSelectedFile] = useState(null)
     const [filename, setFilename] = useState("")
+    const [sessionFiles, setSessionFiles] = useState([])
     const fileRef = useRef(null)
 
     // Zustand State Store Actions
@@ -160,6 +164,40 @@ export function ChatInput() {
         setQuery(firstQuery)
     }, [])
 
+    useEffect(() => {
+        if (!activeChat) {
+            setSessionFiles([])
+            return
+        }
+
+        const fetchSessionFiles = async () => {
+            try {
+                const {data, error} = await supabase
+                    .from('session_files')
+                    .select(`
+                        file_id,
+                        files:file_id (
+                            id,
+                            file_name
+                        )
+                    `)
+                    .eq('session_id', activeChat)
+
+                if (error) {
+                    console.error('Error fetching session files:', error)
+                    return
+                }
+
+                const files = data?.map(item => item.files).filter(Boolean) || []
+                setSessionFiles(files)
+            } catch (err) {
+                console.error('Error fetching session files:', err)
+            }
+        }
+
+        fetchSessionFiles()
+    }, [activeChat])
+
 
     async function uploadFile(formData) {
         setUploadingFile(true)
@@ -246,15 +284,27 @@ export function ChatInput() {
                     <div className={"flex items-center gap-2"}>
                         <UploadDropdown onSelect={handleSelectItem}/>
                         <Dialog>
-                            <DialogTrigger>Resources</DialogTrigger>
+                            <DialogTrigger asChild>
+                                <Button variant="outline">Resources</Button>
+                            </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
-                                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                    <DialogTitle>Your Uploaded Documents</DialogTitle>
                                     <DialogDescription>
-                                        This action cannot be undone. This will permanently delete your account
-                                        and remove your data from our servers.
+                                        These documents were uploaded in this chat session.
                                     </DialogDescription>
                                 </DialogHeader>
+                                <div className={"flex flex-wrap gap-2"}>
+                                    {sessionFiles.length > 0 ? (
+                                        sessionFiles.map((file) => (
+                                            <Button key={file.id} variant={"secondary"}>
+                                                {file.file_name}
+                                            </Button>
+                                        ))
+                                    ) : (
+                                        <p className="text-muted-foreground text-sm">No documents uploaded yet.</p>
+                                    )}
+                                </div>
                             </DialogContent>
                         </Dialog>
                     </div>
