@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 
 const protectedRoutes = ["/dashboard"]
-const authRoutes = ["/signUp","/signIn"]
+const authRoutes = ["/sign-up", "/log-in"]
 
 export async function updateSession(request){
     const path = request.nextUrl.pathname
@@ -38,11 +38,11 @@ export async function updateSession(request){
 
     if (!user && isProtected){
         console.log("user is not valid and trying to access protected routes")
-        return NextResponse.redirect(new URL("/signIn",request.url))
+        return NextResponse.redirect(new URL("/log-in",request.url))
     }
     if (user && isAuth){
         console.log("user and isAuth is valid")
-        return NextResponse.redirect(new URL("/dashboard",request.url))
+        return NextResponse.redirect(new URL("/chat",request.url))
     }
 
     return response

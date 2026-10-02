@@ -3,5 +3,5 @@ export async function proxy(request){
     return await updateSession(request)
 }
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/chat/:path*", "/sign-up", "/log-in", "/dashboard/:path*"],
 };
