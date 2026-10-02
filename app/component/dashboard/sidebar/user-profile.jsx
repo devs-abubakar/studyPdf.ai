@@ -51,10 +51,9 @@ export function UserProfile({ collapsed }) {
       {!collapsed && (
         <div className="flex flex-col min-w-0">
           {name && (
-            <span className="text-sm font-semibold truncate">{name}</span>
+            <span className="text-sm font-semibold truncate">{name ?? "Mockie"}</span>
           )}
-          <span className="text-xs text-muted-foreground truncate">{email}</span>
-          <span className="text-xs text-muted-foreground">Free Plan</span>
+          <span className="text-xs text-muted-foreground truncate">{email ?? "im@mockie.me"}</span>
         </div>
       )}
     </div>
