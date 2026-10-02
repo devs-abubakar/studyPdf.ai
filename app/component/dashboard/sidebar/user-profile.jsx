@@ -31,7 +31,7 @@ export function UserProfile({ collapsed }) {
   const avatar = (
     <Avatar>
       <AvatarImage src={avatarUrl} alt={name ?? email} />
-      <AvatarFallback className="bg-gradient-to-br from-[#FF70BF] to-[#831C91] text-white text-xs font-bold">
+      <AvatarFallback className="text-sm font-medium bg-primary text-background">
         {loading ? "..." : getInitials(name, email)}
       </AvatarFallback>
     </Avatar>
@@ -51,10 +51,9 @@ export function UserProfile({ collapsed }) {
       {!collapsed && (
         <div className="flex flex-col min-w-0">
           {name && (
-            <span className="text-sm font-semibold truncate">{name}</span>
+            <span className="text-sm font-semibold truncate">{name ?? "Mockie"}</span>
           )}
-          <span className="text-xs text-muted-foreground truncate">{email}</span>
-          <span className="text-xs text-muted-foreground">Free Plan</span>
+          <span className="text-xs text-muted-foreground truncate">{email ?? "im@mockie.me"}</span>
         </div>
       )}
     </div>

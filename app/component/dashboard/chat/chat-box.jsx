@@ -44,7 +44,7 @@ function AgentActionPill({ action, progress }) {
   return (
     <div className="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full mb-3"
       style={{
-        background: "rgba(255,112,191,0.08)",
+        background: "rgb(94 94 94 / 0.08)",
         border: "0.5px solid rgba(255,112,191,0.25)",
       }}
     >
@@ -52,7 +52,7 @@ function AgentActionPill({ action, progress }) {
         <span className="flex gap-0.5 items-center h-3.5">
           {[0, 0.2, 0.4].map((delay, i) => (
             <span key={i} className="w-1 h-1 rounded-full animate-pulse"
-              style={{ background: "#D552A3", animationDelay: `${delay}s` }}
+              style={{ background: "#000000", animationDelay: `${delay}s` }}
             />
           ))}
         </span>
@@ -63,14 +63,14 @@ function AgentActionPill({ action, progress }) {
         </svg>
       )}
 
-      <span className="text-xs font-medium" style={{ color: "#831C91" }}>
+      <span className="text-xs font-medium" style={{ color: "#000000" }}>
         {label}
       </span>
 
       {progress && (
         <>
-          <span className="text-xs" style={{ color: "#D552A3", opacity: 0.5 }}>·</span>
-          <span className="text-xs" style={{ color: "#D552A3" }}>{progress}</span>
+          <span className="text-xs" style={{ color: "#000000", opacity: 0.5 }}>·</span>
+          <span className="text-xs" style={{ color: "#000000" }}>{progress}</span>
         </>
       )}
     </div>
