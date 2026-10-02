@@ -31,7 +31,7 @@ export function UserProfile({ collapsed }) {
   const avatar = (
     <Avatar>
       <AvatarImage src={avatarUrl} alt={name ?? email} />
-      <AvatarFallback className="bg-gradient-to-br from-[#FF70BF] to-[#831C91] text-white text-xs font-bold">
+      <AvatarFallback className="text-sm font-medium bg-primary text-background">
         {loading ? "..." : getInitials(name, email)}
       </AvatarFallback>
     </Avatar>
