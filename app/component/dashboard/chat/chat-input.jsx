@@ -17,6 +17,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import {supabase} from "@/app/lib/supabase/client"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
 
 
 export function ChatInput() {
@@ -259,73 +260,84 @@ export function ChatInput() {
 
     return (
         <div className="mx-auto max-w-3xl w-full">
-            <div className="flex flex-col items-start gap-2 rounded-2xl border bg-background pb-2 px-2 shadow-sm">
-                <div>
-                    {selectedFile && (
-                        <FilePill
-                            fileName={filename}
-                            onClick={handleRemoveFile}
-                            isReady={isReady}
-                            uploadingFile={uploadingFile}
-                        />
-                    )}
-                </div>
-
-                <Textarea
-                    placeholder="Ask anything..."
-                    onChange={(e) => setQuery(e.target.value)}
-                    value={query}
-                    onKeyDown={handleKeyDown}
-                    className="min-h-10 max-h-40 pt-2 px-1 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
-                />
-
-                <div className='flex w-full justify-between items-center'>
-                    <div className={"flex items-center gap-2"}>
-                        <UploadDropdown onSelect={handleSelectItem}/>
-                        {
-                            sessionFiles.length !== 0 && (
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline">Resources</Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>Your Uploaded Documents</DialogTitle>
-                                            <DialogDescription>
-                                                These documents were uploaded in this chat session.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className={"flex flex-wrap gap-2"}>
-                                            {sessionFiles.length > 0 ? (
-                                                sessionFiles.map((file) => (
-                                                    <Button key={file.id} variant={"secondary"}>
-                                                        {file.file_name}
-                                                    </Button>
-                                                ))
-                                            ) : (
-                                                <p className="text-muted-foreground text-sm">No documents uploaded yet.</p>
-                                            )}
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-                            )
-                        }
+            <div className={"rounded-2xl border bg-secondary shadow-sm"}>
+                <div className="flex flex-col items-start gap-2 rounded-2xl bg-background pb-2 px-2">
+                    <div>
+                        {selectedFile && (
+                            <FilePill
+                                fileName={filename}
+                                onClick={handleRemoveFile}
+                                isReady={isReady}
+                                uploadingFile={uploadingFile}
+                            />
+                        )}
                     </div>
-                    <input
-                        ref={fileRef}
-                        type="file"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={handleFileChange}
+
+                    <Textarea
+                        placeholder="Ask anything..."
+                        onChange={(e) => setQuery(e.target.value)}
+                        value={query}
+                        onKeyDown={handleKeyDown}
+                        className="min-h-10 max-h-40 pt-2 px-1 resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
                     />
-                    <Button
-                        disabled={uploadingFile || !query.trim()}
-                        size="icon"
-                        className="size-10 rounded-full shrink-0"
-                        onClick={handleSubmit}
-                    >
-                        <ArrowUp className="size-5"/>
-                    </Button>
+
+                    <div className='flex w-full justify-between items-center'>
+                        <div className={"flex items-center gap-2"}>
+                            <UploadDropdown onSelect={handleSelectItem}/>
+                            {
+                                sessionFiles.length !== 0 && (
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline">Resources</Button>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Your Uploaded Documents</DialogTitle>
+                                                <DialogDescription>
+                                                    These documents were uploaded in this chat session.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className={"flex flex-wrap gap-2"}>
+                                                {sessionFiles.length > 0 ? (
+                                                    sessionFiles.map((file) => (
+                                                        <Button key={file.id} variant={"secondary"}>
+                                                            {file.file_name}
+                                                        </Button>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-muted-foreground text-sm">No documents uploaded
+                                                        yet.</p>
+                                                )}
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                )
+                            }
+                        </div>
+                        <input
+                            ref={fileRef}
+                            type="file"
+                            accept=".pdf"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
+                        <Button
+                            disabled={uploadingFile || !query.trim()}
+                            size="icon"
+                            className="size-10 rounded-full shrink-0"
+                            onClick={handleSubmit}
+                        >
+                            <ArrowUp className="size-5"/>
+                        </Button>
+                    </div>
+                </div>
+                <div className={"mx-2 my-1 flex justify-center items-center text-sm"}>
+                    <KbdGroup>
+                        <Kbd className={"bg-background"}>Shift</Kbd>
+                        <span>+</span>
+                        <Kbd className={"bg-background"}>Enter</Kbd>
+                        <span>to add new line</span>
+                    </KbdGroup>
                 </div>
             </div>
         </div>
